@@ -22,6 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Checkbox } from "@/components/ui/checkbox"
+import { signUp } from "@/lib/auth-client"
 
 const signupFormSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -53,9 +54,20 @@ export function SignupForm1({
     },
   })
 
-  function onSubmit(data: SignupFormValues) {
-    console.log("Signup attempt:", data)
-    // Here you would typically handle the signup
+  async function onSubmit(data: SignupFormValues) {
+    const { error } = await signUp.email({
+      email: data.email,
+      password: data.password,
+      name: `${data.firstName} ${data.lastName}`,
+    })
+
+    if (error) {
+      console.error("Sign up error:", error)
+      // TODO: Show error to user
+      return
+    }
+
+    window.location.href = "/"
   }
 
   return (

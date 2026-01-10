@@ -9,5 +9,8 @@ export const auth = betterAuth({
     enabled: true,
   },
   plugins: [admin()],
-  database: new Database("./data.db")
+  database: new Database("./data.db"),
+  trustedOrigins: [
+    'http://localhost:5173'
+  ]
 });

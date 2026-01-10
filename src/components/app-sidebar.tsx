@@ -99,41 +99,17 @@ const data = {
           icon: Shield,
           items: [
             {
-              title: "Sign In 1",
+              title: "Sign In",
               url: "/auth/sign-in",
             },
             {
-              title: "Sign In 2",
-              url: "/auth/sign-in-2",
-            },
-            {
-              title: "Sign In 3",
-              url: "/auth/sign-in-3",
-            },
-            {
-              title: "Sign Up 1",
+              title: "Sign Up",
               url: "/auth/sign-up",
             },
             {
-              title: "Sign Up 2",
-              url: "/auth/sign-up-2",
-            },
-            {
-              title: "Sign Up 3",
-              url: "/auth/sign-up-3",
-            },
-            {
-              title: "Forgot Password 1",
+              title: "Forgot Password",
               url: "/auth/forgot-password",
             },
-            {
-              title: "Forgot Password 2",
-              url: "/auth/forgot-password-2",
-            },
-            {
-              title: "Forgot Password 3",
-              url: "/auth/forgot-password-3",
-            }
           ],
         },
         {
