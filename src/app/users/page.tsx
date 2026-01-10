@@ -1,90 +1,88 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { BaseLayout } from "@/components/layouts/base-layout"
-import { StatCards } from "./components/stat-cards"
-import { DataTable } from "./components/data-table"
+import { AdminDataTable } from "./components/admin-data-table"
+import { authClient } from "@/lib/auth-client"
 
-import initialUsersData from "./data.json"
-
-interface User {
-  id: number
-  name: string
+export interface BetterAuthUser {
+  id: string
   email: string
-  avatar: string
-  role: string
-  plan: string
-  billing: string
-  status: string
-  joinedDate: string
-  lastLogin: string
+  name: string | null
+  image: string | null
+  emailVerified: boolean
+  createdAt: Date
+  updatedAt: Date
+  banned: boolean
 }
 
-interface UserFormValues {
-  name: string
-  email: string
-  role: string
-  plan: string
-  billing: string
-  status: string
-}
+export default function AdminUsersPage() {
+  const [users, setUsers] = useState<BetterAuthUser[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [pagination, setPagination] = useState({
+    limit: 20,
+    offset: 0
+  })
+  const [totalCount, setTotalCount] = useState(0)
 
-export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>(initialUsersData)
+  const fetchUsers = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await authClient.admin.listUsers({
+        limit: pagination.limit,
+        offset: pagination.offset,
+        sortBy: "createdAt",
+        sortDirection: "desc"
+      })
 
-  const generateAvatar = (name: string) => {
-    const names = name.split(" ")
-    if (names.length >= 2) {
-      return `${names[0][0]}${names[1][0]}`.toUpperCase()
+      if (response.error) {
+        setError(response.error.message || "Failed to fetch users")
+      } else if (response.data) {
+        setUsers(response.data.users || [])
+        setTotalCount(response.data.total || 0)
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch users")
+    } finally {
+      setLoading(false)
     }
-    return name.substring(0, 2).toUpperCase()
   }
 
-  const handleAddUser = (userData: UserFormValues) => {
-    const newUser: User = {
-      id: Math.max(...users.map(u => u.id)) + 1,
-      name: userData.name,
-      email: userData.email,
-      avatar: generateAvatar(userData.name),
-      role: userData.role,
-      plan: userData.plan,
-      billing: userData.billing,
-      status: userData.status,
-      joinedDate: new Date().toISOString().split('T')[0],
-      lastLogin: new Date().toISOString().split('T')[0],
-    }
-    setUsers(prev => [newUser, ...prev])
+  useEffect(() => {
+    fetchUsers()
+  }, [pagination])
+
+  const handleDeleteUser = (id: string) => {
+    console.log("Delete user:", id)
   }
 
-  const handleDeleteUser = (id: number) => {
-    setUsers(prev => prev.filter(user => user.id !== id))
-  }
-
-  const handleEditUser = (user: User) => {
-    // For now, just log the user to edit
-    // In a real app, you'd open an edit dialog
+  const handleEditUser = (user: BetterAuthUser) => {
     console.log("Edit user:", user)
   }
 
+  const handlePaginationChange = (newLimit: number, newOffset: number) => {
+    setPagination({ limit: newLimit, offset: newOffset })
+  }
+
   return (
-    <BaseLayout 
-      title="Users" 
-      description="Manage your users and their permissions"
+    <BaseLayout
+      title="Admin Users"
+      description="Manage users from the better-auth system"
     >
-      <div className="flex flex-col gap-4">
-        <div className="@container/main px-4 lg:px-6">
-          <StatCards />
-        </div>
-        
-        <div className="@container/main px-4 lg:px-6 mt-8 lg:mt-12">
-         
-          <DataTable 
-            users={users}
-            onDeleteUser={handleDeleteUser}
-            onEditUser={handleEditUser}
-            onAddUser={handleAddUser}
-          />
-        </div>
+      <div className="@container/main px-4 lg:px-6">
+        <AdminDataTable
+          users={users}
+          loading={loading}
+          error={error}
+          totalCount={totalCount}
+          pagination={pagination}
+          onDeleteUser={handleDeleteUser}
+          onEditUser={handleEditUser}
+          onRefresh={fetchUsers}
+          onPaginationChange={handlePaginationChange}
+        />
       </div>
     </BaseLayout>
   )

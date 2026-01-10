@@ -6,7 +6,6 @@ import {
   type ColumnFiltersState,
   type SortingState,
   type VisibilityState,
-  type Row,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -20,8 +19,10 @@ import {
   Eye,
   Pencil,
   Trash2,
-  Download,
   Search,
+  RefreshCw,
+  ShieldCheck,
+  ShieldX,
 } from "lucide-react"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -53,81 +54,63 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { UserFormDialog } from "./user-form-dialog"
+import type { BetterAuthUser } from "../page"
 
-interface User {
-  id: number
-  name: string
-  email: string
-  avatar: string
-  role: string
-  plan: string
-  billing: string
-  status: string
-  joinedDate: string
-  lastLogin: string
+interface AdminDataTableProps {
+  users: BetterAuthUser[]
+  loading: boolean
+  error: string | null
+  totalCount: number
+  pagination: { limit: number; offset: number }
+  onDeleteUser: (id: string) => void
+  onEditUser: (user: BetterAuthUser) => void
+  onRefresh: () => void
+  onPaginationChange: (limit: number, offset: number) => void
 }
 
-interface UserFormValues {
-  name: string
-  email: string
-  role: string
-  plan: string
-  billing: string
-  status: string
-}
-
-interface DataTableProps {
-  users: User[]
-  onDeleteUser: (id: number) => void
-  onEditUser: (user: User) => void
-  onAddUser: (userData: UserFormValues) => void
-}
-
-export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTableProps) {
+export function AdminDataTable({
+  users,
+  loading,
+  error,
+  totalCount,
+  pagination,
+  onDeleteUser,
+  onEditUser,
+  onRefresh,
+  onPaginationChange,
+}: AdminDataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [globalFilter, setGlobalFilter] = useState("")
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Active":
-        return "text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-900/20"
-      case "Pending":
-        return "text-orange-600 bg-orange-50 dark:text-orange-400 dark:bg-orange-900/20"
-      case "Error":
-        return "text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20"
-      case "Inactive":
-        return "text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-900/20"
-      default:
-        return "text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-900/20"
+  const getStatusColor = (banned: boolean) => {
+    return banned
+      ? "text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20"
+      : "text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-900/20"
+  }
+
+  const formatDate = (date: Date | string) => {
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
+  }
+
+  const getAvatarFallback = (name: string | null, email: string) => {
+    if (name) {
+      const names = name.split(" ")
+      if (names.length >= 2) {
+        return `${names[0][0]}${names[1][0]}`.toUpperCase()
+      }
+      return name.substring(0, 2).toUpperCase()
     }
+    return email.substring(0, 2).toUpperCase()
   }
 
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case "Admin":
-        return "text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20"
-      case "Editor":
-        return "text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20"
-      case "Author":
-        return "text-yellow-600 bg-yellow-50 dark:text-yellow-400 dark:bg-yellow-900/20"
-      case "Maintainer":
-        return "text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-900/20"
-      case "Subscriber":
-        return "text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-900/20"
-      default:
-        return "text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-900/20"
-    }
-  }
-
-  const exactFilter = (row: Row<User>, columnId: string, value: string) => {
-    return row.getValue(columnId) === value
-  }
-
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<BetterAuthUser>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -163,12 +146,17 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
         return (
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs font-medium">
-                {user.avatar}
-              </AvatarFallback>
+              {user.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.image} alt={user.name || user.email} />
+              ) : (
+                <AvatarFallback className="text-xs font-medium">
+                  {getAvatarFallback(user.name, user.email)}
+                </AvatarFallback>
+              )}
             </Avatar>
             <div className="flex flex-col">
-              <span className="font-medium">{user.name}</span>
+              <span className="font-medium">{user.name || "Unnamed User"}</span>
               <span className="text-sm text-muted-foreground">{user.email}</span>
             </div>
           </div>
@@ -176,47 +164,64 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
       },
     },
     {
-      accessorKey: "role",
-      header: "Role",
+      accessorKey: "emailVerified",
+      header: "Email Verified",
       cell: ({ row }) => {
-        const role = row.getValue("role") as string
+        const verified = row.getValue("emailVerified") as boolean
         return (
-          <Badge variant="secondary" className={getRoleColor(role)}>
-            {role}
+          <Badge
+            variant="secondary"
+            className={
+              verified
+                ? "text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-900/20"
+                : "text-orange-600 bg-orange-50 dark:text-orange-400 dark:bg-orange-900/20"
+            }
+          >
+            {verified ? "Verified" : "Pending"}
           </Badge>
         )
       },
-      filterFn: exactFilter,
     },
     {
-      accessorKey: "plan",
-      header: "Plan",
-      cell: ({ row }) => {
-        const plan = row.getValue("plan") as string
-        return <span className="font-medium">{plan}</span>
-      },
-      filterFn: exactFilter,
-    },
-    {
-      accessorKey: "billing",
-      header: "Billing",
-      cell: ({ row }) => {
-        const billing = row.getValue("billing") as string
-        return <span className="text-sm">{billing}</span>
-      },
-    },
-    {
-      accessorKey: "status",
+      accessorKey: "banned",
       header: "Status",
       cell: ({ row }) => {
-        const status = row.getValue("status") as string
+        const banned = row.getValue("banned") as boolean
         return (
-          <Badge variant="secondary" className={getStatusColor(status)}>
-            {status}
+          <Badge variant="secondary" className={getStatusColor(banned)}>
+            {banned ? (
+              <>
+                <ShieldX className="mr-1 size-3" />
+                Banned
+              </>
+            ) : (
+              <>
+                <ShieldCheck className="mr-1 size-3" />
+                Active
+              </>
+            )}
           </Badge>
         )
       },
-      filterFn: exactFilter,
+      filterFn: (row, id, value) => {
+        return value === "all" || row.getValue(id) === (value === "banned")
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created",
+      cell: ({ row }) => {
+        const date = row.getValue("createdAt") as Date
+        return <span className="text-sm">{formatDate(date)}</span>
+      },
+    },
+    {
+      accessorKey: "updatedAt",
+      header: "Updated",
+      cell: ({ row }) => {
+        const date = row.getValue("updatedAt") as Date
+        return <span className="text-sm">{formatDate(date)}</span>
+      },
     },
     {
       id: "actions",
@@ -250,10 +255,7 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
                   View Details
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer">
-                  Send Email
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  Reset Password
+                  View Sessions
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -293,12 +295,29 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
     },
   })
 
-  const roleFilter = table.getColumn("role")?.getFilterValue() as string
-  const planFilter = table.getColumn("plan")?.getFilterValue() as string
-  const statusFilter = table.getColumn("status")?.getFilterValue() as string
+  const statusFilter = table.getColumn("banned")?.getFilterValue() as string
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    table.setPageSize(newPageSize)
+    onPaginationChange(newPageSize, 0)
+  }
+
+  const handlePageChange = (direction: "next" | "previous") => {
+    const newPageIndex =
+      direction === "next"
+        ? table.getState().pagination.pageIndex + 1
+        : table.getState().pagination.pageIndex - 1
+    const newOffset = newPageIndex * table.getState().pagination.pageSize
+    onPaginationChange(table.getState().pagination.pageSize, newOffset)
+  }
+
+  const handleStatusFilterChange = (value: string) => {
+    table.getColumn("banned")?.setFilterValue(value === "all" ? "" : value === "banned")
+  }
 
   return (
     <div className="w-full space-y-4">
+      {/* Header with search and actions */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-1 items-center space-x-2">
           <div className="relative flex-1 max-w-sm">
@@ -308,87 +327,44 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
               value={globalFilter ?? ""}
               onChange={(event) => setGlobalFilter(String(event.target.value))}
               className="pl-9"
+              disabled={loading}
             />
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="outline" className="cursor-pointer">
-            <Download className="mr-2 size-4" />
-            Export
+          <Button
+            variant="outline"
+            onClick={onRefresh}
+            disabled={loading}
+            className="cursor-pointer"
+          >
+            <RefreshCw className={`mr-2 size-4 ${loading ? "animate-spin" : ""}`} />
+            Refresh
           </Button>
-          <UserFormDialog onAddUser={onAddUser} />
         </div>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-4 sm:gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="role-filter" className="text-sm font-medium">
-            Role
-          </Label>
-          <Select
-            value={roleFilter || ""}
-            onValueChange={(value) =>
-              table.getColumn("role")?.setFilterValue(value === "all" ? "" : value)
-            }
-          >
-            <SelectTrigger className="cursor-pointer w-full" id="role-filter">
-              <SelectValue placeholder="Select Role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Roles</SelectItem>
-              <SelectItem value="Admin">Admin</SelectItem>
-              <SelectItem value="Author">Author</SelectItem>
-              <SelectItem value="Editor">Editor</SelectItem>
-              <SelectItem value="Maintainer">Maintainer</SelectItem>
-              <SelectItem value="Subscriber">Subscriber</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="plan-filter" className="text-sm font-medium">
-            Plan
-          </Label>
-          <Select
-            value={planFilter || ""}
-            onValueChange={(value) =>
-              table.getColumn("plan")?.setFilterValue(value === "all" ? "" : value)
-            }
-          >
-            <SelectTrigger className="cursor-pointer w-full" id="plan-filter">
-              <SelectValue placeholder="Select Plan" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Plans</SelectItem>
-              <SelectItem value="Basic">Basic</SelectItem>
-              <SelectItem value="Professional">Professional</SelectItem>
-              <SelectItem value="Enterprise">Enterprise</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Status filter */}
+      <div className="grid gap-2 sm:grid-cols-2 sm:gap-4">
         <div className="space-y-2">
           <Label htmlFor="status-filter" className="text-sm font-medium">
             Status
           </Label>
           <Select
-            value={statusFilter || ""}
-            onValueChange={(value) =>
-              table.getColumn("status")?.setFilterValue(value === "all" ? "" : value)
-            }
+            value={statusFilter ? (statusFilter === true ? "banned" : "active") : "all"}
+            onValueChange={handleStatusFilterChange}
           >
             <SelectTrigger className="cursor-pointer w-full" id="status-filter">
               <SelectValue placeholder="Select Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="Active">Active</SelectItem>
-              <SelectItem value="Pending">Pending</SelectItem>
-              <SelectItem value="Error">Error</SelectItem>
-              <SelectItem value="Inactive">Inactive</SelectItem>
+              <SelectItem value="all">All Users</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="banned">Banned</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
-
           <Label htmlFor="column-visibility" className="text-sm font-medium">
             Column Visibility
           </Label>
@@ -408,9 +384,7 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
                     >
                       {column.id}
                     </DropdownMenuCheckboxItem>
@@ -421,6 +395,14 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
         </div>
       </div>
 
+      {/* Error state */}
+      {error && (
+        <div className="rounded-md border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950/20">
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        </div>
+      )}
+
+      {/* Table */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -431,10 +413,7 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
                     <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   )
                 })}
@@ -442,29 +421,29 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <div className="flex items-center justify-center">
+                    <RefreshCw className="mr-2 size-4 animate-spin" />
+                    Loading users...
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No users found.
                 </TableCell>
               </TableRow>
             )}
@@ -472,17 +451,15 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
         </Table>
       </div>
 
+      {/* Pagination */}
       <div className="flex items-center justify-between space-x-2 py-4">
-
         <div className="flex items-center space-x-2">
           <Label htmlFor="page-size" className="text-sm font-medium">
             Show
           </Label>
           <Select
             value={`${table.getState().pagination.pageSize}`}
-            onValueChange={(value) => {
-              table.setPageSize(Number(value))
-            }}
+            onValueChange={handlePageSizeChange}
           >
             <SelectTrigger className="w-20 cursor-pointer" id="page-size">
               <SelectValue placeholder={table.getState().pagination.pageSize} />
@@ -504,16 +481,15 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
           <div className="flex items-center space-x-2 hidden sm:flex">
             <p className="text-sm font-medium">Page</p>
             <strong className="text-sm">
-              {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
+              {table.getState().pagination.pageIndex + 1} of {Math.ceil(totalCount / table.getState().pagination.pageSize)}
             </strong>
           </div>
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
+              onClick={() => handlePageChange("previous")}
+              disabled={!table.getCanPreviousPage() || loading}
               className="cursor-pointer"
             >
               Previous
@@ -521,8 +497,8 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
             <Button
               variant="outline"
               size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
+              onClick={() => handlePageChange("next")}
+              disabled={!table.getCanNextPage() || loading}
               className="cursor-pointer"
             >
               Next
