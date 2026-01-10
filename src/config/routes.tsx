@@ -1,12 +1,13 @@
 import { lazy } from 'react'
 import { Navigate } from 'react-router-dom'
-import { LayoutDashboard, Users as UsersIcon, HelpCircle, type LucideIcon } from 'lucide-react'
+import { LayoutDashboard, Users as UsersIcon, HelpCircle, Building2, type LucideIcon } from 'lucide-react'
 import type { Feature } from '~/dashboard.config.type'
 
 // Lazy load components for better performance
 const Landing = lazy(() => import('@/app/landing/page'))
 const Dashboard = lazy(() => import('@/app/dashboard/page'))
 const Users = lazy(() => import('@/app/users/page'))
+const Organizations = lazy(() => import('@/app/organizations/page'))
 const FAQs = lazy(() => import('@/app/faqs/page'))
 
 // Auth pages
@@ -66,6 +67,13 @@ export const routes: RouteConfig[] = [
     title: "Users",
     icon: UsersIcon,
     requiresFeature: "admin"
+  },
+  {
+    path: "/organizations",
+    element: <Organizations />,
+    title: "Organizations",
+    icon: Building2,
+    requiresFeature: "organizations"
   },
   {
     path: "/faqs",
