@@ -1,6 +1,6 @@
 type Feature = 'admin' | 'organizations'
 
-interface Config {
+export interface Config {
     /**
      * The brand name to be displayed in the dashboard.
      */
