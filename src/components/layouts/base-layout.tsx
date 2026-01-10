@@ -1,9 +1,11 @@
 "use client"
 
 import * as React from "react"
+import { Navigate } from "react-router-dom"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { useSidebarConfig } from "@/hooks/use-sidebar-config"
+import { useSession } from "@/lib/auth-client"
 import {
   SidebarInset,
   SidebarProvider,
@@ -17,6 +19,17 @@ interface BaseLayoutProps {
 
 export function BaseLayout({ children, title, description }: BaseLayoutProps) {
   const { config } = useSidebarConfig()
+  const { data: session, isPending } = useSession()
+
+  // Redirect to sign-in if not authenticated
+  if (!isPending && !session?.user) {
+    return <Navigate to="/auth/sign-in" replace />
+  }
+
+  // Show loading state while checking session
+  if (isPending) {
+    return null
+  }
 
   return (
     <div className="flex h-screen overflow-hidden">
