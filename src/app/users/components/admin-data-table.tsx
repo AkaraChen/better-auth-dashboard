@@ -17,7 +17,7 @@ import {
   Ban,
   ChevronDown,
   EllipsisVertical,
-  Eye,
+  Monitor,
   Pencil,
   Trash2,
   Search,
@@ -68,6 +68,7 @@ interface AdminDataTableProps {
   onDeleteUser: (userId: string) => void
   onBanUser: (userId: string) => void
   onUnbanUser: (userId: string) => void
+  onManageSessions?: (user: BetterAuthUser) => void
   onRefresh: () => void
   onPaginationChange: (limit: number, offset: number) => void
 }
@@ -82,6 +83,7 @@ export function AdminDataTable({
   onDeleteUser,
   onBanUser,
   onUnbanUser,
+  onManageSessions,
   onRefresh,
   onPaginationChange,
 }: AdminDataTableProps) {
@@ -269,6 +271,18 @@ export function AdminDataTable({
                     <Ban className="mr-2 size-4" />
                     Ban User
                   </DropdownMenuItem>
+                )}
+                {onManageSessions && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => onManageSessions(user)}
+                    >
+                      <Monitor className="mr-2 size-4" />
+                      Manage Sessions
+                    </DropdownMenuItem>
+                  </>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem

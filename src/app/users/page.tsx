@@ -6,6 +6,7 @@ import { AdminDataTable } from "./components/admin-data-table"
 import { CreateUserDialog, type CreateUserFormValues } from "./components/create-user-dialog"
 import { EditUserDialog, type EditUserFormValues } from "./components/edit-user-dialog"
 import { UserDeleteDialog } from "./components/user-delete-dialog"
+import { UserSessionsDialog } from "./components/user-sessions-dialog"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
 
@@ -19,6 +20,15 @@ export interface BetterAuthUser {
   updatedAt: Date
   banned: boolean
   role?: string
+}
+
+export interface UserSession {
+  token: string
+  expiresAt: Date
+  ipAddress: string | null
+  userAgent: string | null
+  createdAt: Date
+  impersonatedBy: string | null
 }
 
 export default function AdminUsersPage() {
@@ -36,6 +46,10 @@ export default function AdminUsersPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [editDialogState, setEditDialogState] = useState<{
+    open: boolean
+    user: BetterAuthUser | null
+  }>({ open: false, user: null })
+  const [sessionsDialogState, setSessionsDialogState] = useState<{
     open: boolean
     user: BetterAuthUser | null
   }>({ open: false, user: null })
@@ -191,6 +205,14 @@ export default function AdminUsersPage() {
     }
   }
 
+  const openSessionsDialog = (user: BetterAuthUser) => {
+    setSessionsDialogState({ open: true, user })
+  }
+
+  const closeSessionsDialog = () => {
+    setSessionsDialogState({ open: false, user: null })
+  }
+
   return (
     <BaseLayout
       title="Users"
@@ -207,6 +229,7 @@ export default function AdminUsersPage() {
           onDeleteUser={openDeleteDialog}
           onBanUser={handleBanUser}
           onUnbanUser={handleUnbanUser}
+          onManageSessions={openSessionsDialog}
           onRefresh={fetchUsers}
           onPaginationChange={handlePaginationChange}
         />
@@ -232,6 +255,13 @@ export default function AdminUsersPage() {
           open={deleteDialogOpen}
           onOpenChange={setDeleteDialogOpen}
           onConfirm={handleDeleteUser}
+        />
+
+        {/* Sessions Management Dialog */}
+        <UserSessionsDialog
+          user={sessionsDialogState.user}
+          open={sessionsDialogState.open}
+          onOpenChange={closeSessionsDialog}
         />
       </div>
     </BaseLayout>
