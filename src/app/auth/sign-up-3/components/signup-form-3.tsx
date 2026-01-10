@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Logo } from "@/components/logo"
+import config from "@/dashboard.config"
 
 export function SignupForm3({
   className,
@@ -23,7 +24,7 @@ export function SignupForm3({
                   <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-md">
                     <Logo size={24} />
                   </div>
-                  <span className="text-xl">ShadcnStore</span>
+                  <span className="text-xl">{config.brand}</span>
                 </a>
               </div>
               <div className="flex flex-col items-center text-center">

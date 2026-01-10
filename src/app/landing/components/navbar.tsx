@@ -28,6 +28,7 @@ import { Logo } from '@/components/logo'
 import { MegaMenu } from '@/components/landing/mega-menu'
 import { ModeToggle } from '@/components/mode-toggle'
 import { useTheme } from '@/hooks/use-theme'
+import config from "@/dashboard.config"
 
 const navigationItems = [
   { name: 'Home', href: '#hero' },
@@ -84,7 +85,7 @@ export function LandingNavbar() {
           <a href="https://shadcnstore.com" className="flex items-center space-x-2 cursor-pointer" target='_blank' rel="noopener noreferrer">
             <Logo size={32} />
             <span className="font-bold">
-              ShadcnStore
+              {config.brand}
             </span>
           </a>
         </div>
@@ -161,7 +162,7 @@ export function LandingNavbar() {
                   <div className="p-2 bg-primary/10 rounded-lg">
                     <Logo size={16} />
                   </div>
-                  <SheetTitle className="text-lg font-semibold">ShadcnStore</SheetTitle>
+                  <SheetTitle className="text-lg font-semibold">{config.brand}</SheetTitle>
                   <div className="ml-auto flex items-center gap-2">
                     <Button
                       variant="ghost"

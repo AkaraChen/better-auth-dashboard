@@ -1,5 +1,6 @@
 import { LoginForm2 } from "./components/login-form-2"
 import { Logo } from "@/components/logo"
+import config from "@/dashboard.config"
 
 export default function LoginPage() {
   return (
@@ -10,7 +11,7 @@ export default function LoginPage() {
             <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-md">
               <Logo size={24} />
             </div>
-            ShadcnStore
+            {config.brand}
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">

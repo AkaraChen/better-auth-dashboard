@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form"
 import { Logo } from '@/components/logo'
 import { Github, Twitter, Linkedin, Youtube, Heart } from 'lucide-react'
+import config from "@/dashboard.config"
 
 const newsletterSchema = z.object({
   email: z.string().email({
@@ -112,7 +113,7 @@ export function LandingFooter() {
             <div className="flex items-center space-x-2 mb-4 max-lg:justify-center">
               <a href="https://shadcnstore.com" target='_blank' className="flex items-center space-x-2 cursor-pointer">
                 <Logo size={32} />
-                <span className="font-bold text-xl">ShadcnStore</span>
+                <span className="font-bold text-xl">{config.brand}</span>
               </a>
             </div>
             <p className="text-muted-foreground mb-6 max-lg:text-center max-lg:flex max-lg:justify-center">
@@ -210,7 +211,7 @@ export function LandingFooter() {
               <Heart className="h-4 w-4 text-red-500 fill-current" />
               <span>by</span>
               <a href="https://shadcnstore.com" target='_blank' className="font-semibold text-foreground hover:text-primary transition-colors cursor-pointer">
-                ShadcnStore
+                {config.brand}
               </a>
             </div>
             <span className="hidden sm:inline">•</span>

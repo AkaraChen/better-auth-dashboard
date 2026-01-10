@@ -2,6 +2,7 @@ import { BrowserRouter as Router } from 'react-router-dom'
 import { ThemeProvider } from '@/components/theme-provider'
 import { SidebarConfigProvider } from '@/contexts/sidebar-context'
 import { AppRouter } from '@/components/router/app-router'
+import { Seo } from '@/components/seo'
 import { useEffect } from 'react'
 import { initGTM } from '@/utils/analytics'
 
@@ -16,6 +17,7 @@ function App() {
 
   return (
     <div className="font-sans antialiased" style={{ fontFamily: 'var(--font-inter)' }}>
+      <Seo />
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <SidebarConfigProvider>
           <Router basename={basename}>

@@ -1,5 +1,6 @@
 import { ForgotPasswordForm1 } from "./components/forgot-password-form-1"
 import { Logo } from "@/components/logo"
+import config from "@/dashboard.config"
 
 export default function ForgotPasswordPage() {
   return (
@@ -9,7 +10,7 @@ export default function ForgotPasswordPage() {
           <div className="bg-primary text-primary-foreground flex size-9 items-center justify-center rounded-md">
             <Logo size={24} />
           </div>
-          ShadcnStore
+          {config.brand}
         </a>
         <ForgotPasswordForm1 />
       </div>

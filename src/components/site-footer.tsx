@@ -1,5 +1,6 @@
 import { Heart } from "lucide-react"
 import { Link } from "react-router-dom"
+import config from "@/dashboard.config"
 
 export function SiteFooter() {
   return (
@@ -16,7 +17,7 @@ export function SiteFooter() {
               rel="noopener noreferrer"
               className="font-medium text-foreground hover:text-primary transition-colors"
             >
-              ShadcnStore Team
+              {config.brand} Team
             </Link>
           </div>
           <p className="text-xs text-muted-foreground">

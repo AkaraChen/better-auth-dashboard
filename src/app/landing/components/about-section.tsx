@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { CardDecorator } from '@/components/ui/card-decorator'
 import { Github, Code, Palette, Layout, Crown } from 'lucide-react'
+import config from "@/dashboard.config"
 
 const values = [
   {
@@ -36,7 +37,7 @@ export function AboutSection() {
         {/* Section Header */}
         <div className="mx-auto max-w-4xl text-center mb-16">
           <Badge variant="outline" className="mb-4">
-            About ShadcnStore
+            About {config.brand}
           </Badge>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">
             Built for developers, by developers
