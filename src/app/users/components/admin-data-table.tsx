@@ -17,6 +17,7 @@ import {
   Ban,
   ChevronDown,
   EllipsisVertical,
+  Key,
   Monitor,
   Pencil,
   Trash2,
@@ -69,6 +70,7 @@ interface AdminDataTableProps {
   onBanUser: (userId: string) => void
   onUnbanUser: (userId: string) => void
   onManageSessions?: (user: BetterAuthUser) => void
+  onSetPassword?: (user: BetterAuthUser) => void
   onRefresh: () => void
   onPaginationChange: (limit: number, offset: number) => void
 }
@@ -84,6 +86,7 @@ export function AdminDataTable({
   onBanUser,
   onUnbanUser,
   onManageSessions,
+  onSetPassword,
   onRefresh,
   onPaginationChange,
 }: AdminDataTableProps) {
@@ -281,6 +284,18 @@ export function AdminDataTable({
                     >
                       <Monitor className="mr-2 size-4" />
                       Manage Sessions
+                    </DropdownMenuItem>
+                  </>
+                )}
+                {onSetPassword && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => onSetPassword(user)}
+                    >
+                      <Key className="mr-2 size-4" />
+                      Set Password
                     </DropdownMenuItem>
                   </>
                 )}

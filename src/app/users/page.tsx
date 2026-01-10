@@ -7,6 +7,7 @@ import { CreateUserDialog, type CreateUserFormValues } from "./components/create
 import { EditUserDialog, type EditUserFormValues } from "./components/edit-user-dialog"
 import { UserDeleteDialog } from "./components/user-delete-dialog"
 import { UserSessionsDialog } from "./components/user-sessions-dialog"
+import { SetPasswordDialog, type SetPasswordFormValues } from "./components/set-password-dialog"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
 
@@ -50,6 +51,10 @@ export default function AdminUsersPage() {
     user: BetterAuthUser | null
   }>({ open: false, user: null })
   const [sessionsDialogState, setSessionsDialogState] = useState<{
+    open: boolean
+    user: BetterAuthUser | null
+  }>({ open: false, user: null })
+  const [setPasswordDialogState, setSetPasswordDialogState] = useState<{
     open: boolean
     user: BetterAuthUser | null
   }>({ open: false, user: null })
@@ -213,6 +218,29 @@ export default function AdminUsersPage() {
     setSessionsDialogState({ open: false, user: null })
   }
 
+  const openSetPasswordDialog = (user: BetterAuthUser) => {
+    setSetPasswordDialogState({ open: true, user })
+  }
+
+  const closeSetPasswordDialog = () => {
+    setSetPasswordDialogState({ open: false, user: null })
+  }
+
+  const handleSetPassword = async (userId: string, values: SetPasswordFormValues) => {
+    try {
+      const result = await authClient.admin.setUserPassword({
+        userId,
+        newPassword: values.newPassword,
+      })
+
+      if (result.error) {
+        throw new Error(result.error.message || "Failed to set password")
+      }
+    } catch (err) {
+      throw err
+    }
+  }
+
   return (
     <BaseLayout
       title="Users"
@@ -230,6 +258,7 @@ export default function AdminUsersPage() {
           onBanUser={handleBanUser}
           onUnbanUser={handleUnbanUser}
           onManageSessions={openSessionsDialog}
+          onSetPassword={openSetPasswordDialog}
           onRefresh={fetchUsers}
           onPaginationChange={handlePaginationChange}
         />
@@ -262,6 +291,14 @@ export default function AdminUsersPage() {
           user={sessionsDialogState.user}
           open={sessionsDialogState.open}
           onOpenChange={closeSessionsDialog}
+        />
+
+        {/* Set Password Dialog */}
+        <SetPasswordDialog
+          user={setPasswordDialogState.user}
+          open={setPasswordDialogState.open}
+          onOpenChange={closeSetPasswordDialog}
+          onSubmit={handleSetPassword}
         />
       </div>
     </BaseLayout>
