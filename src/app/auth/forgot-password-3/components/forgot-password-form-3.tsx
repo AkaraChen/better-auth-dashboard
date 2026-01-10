@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Logo } from "@/components/logo"
-import config from "@/dashboard.config"
+import config from "~/dashboard.config"
 
 export function ForgotPasswordForm3({
   className,

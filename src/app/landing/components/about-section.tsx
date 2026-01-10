@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { CardDecorator } from '@/components/ui/card-decorator'
 import { Github, Code, Palette, Layout, Crown } from 'lucide-react'
-import config from "@/dashboard.config"
+import config from "~/dashboard.config"
 
 const values = [
   {

@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async'
-import config from '@/dashboard.config'
+import config from '~/dashboard.config'
 
 export function Seo() {
   const brand = config.brand

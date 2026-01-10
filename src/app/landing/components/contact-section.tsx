@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Mail, MessageCircle, Github, BookOpen } from 'lucide-react'
-import config from "@/dashboard.config"
+import config from "~/dashboard.config"
 
 const contactFormSchema = z.object({
   firstName: z.string().min(2, {

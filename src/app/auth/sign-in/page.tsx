@@ -1,6 +1,6 @@
 import { LoginForm1 } from "./components/login-form-1"
 import { Logo } from "@/components/logo"
-import config from "@/dashboard.config"
+import config from "~/dashboard.config"
 
 export default function Page() {
   return (

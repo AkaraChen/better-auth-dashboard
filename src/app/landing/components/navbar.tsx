@@ -28,7 +28,7 @@ import { Logo } from '@/components/logo'
 import { MegaMenu } from '@/components/landing/mega-menu'
 import { ModeToggle } from '@/components/mode-toggle'
 import { useTheme } from '@/hooks/use-theme'
-import config from "@/dashboard.config"
+import config from "~/dashboard.config"
 
 const navigationItems = [
   { name: 'Home', href: '#hero' },

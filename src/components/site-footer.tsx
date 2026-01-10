@@ -1,6 +1,6 @@
 import { Heart } from "lucide-react"
 import { Link } from "react-router-dom"
-import config from "@/dashboard.config"
+import config from "~/dashboard.config"
 
 export function SiteFooter() {
   return (

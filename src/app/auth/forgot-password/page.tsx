@@ -1,6 +1,6 @@
 import { ForgotPasswordForm1 } from "./components/forgot-password-form-1"
 import { Logo } from "@/components/logo"
-import config from "@/dashboard.config"
+import config from "~/dashboard.config"
 
 export default function ForgotPasswordPage() {
   return (

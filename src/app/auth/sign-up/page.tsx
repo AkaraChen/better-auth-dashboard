@@ -1,6 +1,6 @@
 import { SignupForm1 } from "./components/signup-form-1"
 import { Logo } from "@/components/logo"
-import config from "@/dashboard.config"
+import config from "~/dashboard.config"
 
 export default function SignUpPage() {
   return (

@@ -4,7 +4,7 @@ import { CircleHelp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
-import config from "@/dashboard.config"
+import config from "~/dashboard.config"
 
 type FaqItem = {
   value: string
