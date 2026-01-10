@@ -14,6 +14,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import {
+  Ban,
   ChevronDown,
   EllipsisVertical,
   Eye,
@@ -23,6 +24,7 @@ import {
   RefreshCw,
   ShieldCheck,
   ShieldX,
+  Undo2,
 } from "lucide-react"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -55,6 +57,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import type { BetterAuthUser } from "../page"
+import type { UserFormValues } from "./user-form-dialog"
 
 interface AdminDataTableProps {
   users: BetterAuthUser[]
@@ -62,8 +65,11 @@ interface AdminDataTableProps {
   error: string | null
   totalCount: number
   pagination: { limit: number; offset: number }
-  onDeleteUser: (id: string) => void
-  onEditUser: (user: BetterAuthUser) => void
+  onCreateUser: () => void
+  onUpdateUser: (user: BetterAuthUser) => void
+  onDeleteUser: (userId: string) => void
+  onBanUser: (userId: string) => void
+  onUnbanUser: (userId: string) => void
   onRefresh: () => void
   onPaginationChange: (limit: number, offset: number) => void
 }
@@ -74,8 +80,11 @@ export function AdminDataTable({
   error,
   totalCount,
   pagination,
+  onCreateUser,
+  onUpdateUser,
   onDeleteUser,
-  onEditUser,
+  onBanUser,
+  onUnbanUser,
   onRefresh,
   onPaginationChange,
 }: AdminDataTableProps) {
@@ -230,15 +239,11 @@ export function AdminDataTable({
         const user = row.original
         return (
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer">
-              <Eye className="size-4" />
-              <span className="sr-only">View user</span>
-            </Button>
             <Button
               variant="ghost"
               size="icon"
               className="h-8 w-8 cursor-pointer"
-              onClick={() => onEditUser(user)}
+              onClick={() => onUpdateUser(user)}
             >
               <Pencil className="size-4" />
               <span className="sr-only">Edit user</span>
@@ -251,12 +256,30 @@ export function AdminDataTable({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem className="cursor-pointer">
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => onUpdateUser(user)}
+                >
+                  <Eye className="mr-2 size-4" />
                   View Details
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  View Sessions
-                </DropdownMenuItem>
+                {user.banned ? (
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => onUnbanUser(user.id)}
+                  >
+                    <Undo2 className="mr-2 size-4" />
+                    Unban User
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => onBanUser(user.id)}
+                  >
+                    <Ban className="mr-2 size-4" />
+                    Ban User
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   variant="destructive"
@@ -332,6 +355,10 @@ export function AdminDataTable({
           </div>
         </div>
         <div className="flex items-center space-x-2">
+          <Button onClick={onCreateUser} className="cursor-pointer">
+            <Pencil className="mr-2 size-4" />
+            Add User
+          </Button>
           <Button
             variant="outline"
             onClick={onRefresh}
