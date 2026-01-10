@@ -156,14 +156,9 @@ export function OrganizationDataTable({
       cell: ({ row }) => {
         const org = row.original
         return (
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
-              {org.name.substring(0, 2).toUpperCase()}
-            </div>
-            <div className="flex flex-col">
-              <span className="font-medium">{org.name}</span>
-              <span className="text-sm text-muted-foreground">@{org.slug}</span>
-            </div>
+          <div className="flex flex-col">
+            <span className="font-medium">{org.name}</span>
+            <span className="text-sm text-muted-foreground">@{org.slug}</span>
           </div>
         )
       },
@@ -237,14 +232,6 @@ export function OrganizationDataTable({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() => onEdit(org)}
-                >
-                  <Pencil className="mr-2 size-4" />
-                  Edit Organization
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   variant="destructive"
                   className="cursor-pointer"
@@ -464,18 +451,12 @@ export function OrganizationDataTable({
                                           key={member.id}
                                           className="flex items-center justify-between rounded-lg border bg-background p-3"
                                         >
-                                          <div className="flex items-center gap-3">
-                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-blue-600 text-white text-xs font-semibold">
-                                              {member.user.name?.substring(0, 2).toUpperCase() ||
-                                               member.user.email.substring(0, 2).toUpperCase()}
+                                          <div>
+                                            <div className="font-medium">
+                                              {member.user.name || "Unnamed User"}
                                             </div>
-                                            <div>
-                                              <div className="font-medium">
-                                                {member.user.name || "Unnamed User"}
-                                              </div>
-                                              <div className="text-sm text-muted-foreground">
-                                                {member.user.email}
-                                              </div>
+                                            <div className="text-sm text-muted-foreground">
+                                              {member.user.email}
                                             </div>
                                           </div>
                                           <div className="flex items-center gap-3">

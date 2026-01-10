@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { AlertTriangle, Building2, Trash2 } from "lucide-react"
+import { AlertTriangle, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 
@@ -74,10 +74,7 @@ export function DeleteOrganizationDialog({
         </DialogHeader>
 
         {organization && (
-          <div className="flex items-center gap-3 rounded-lg border p-4 bg-muted/50">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-600 text-white font-semibold">
-              <Building2 className="h-6 w-6" />
-            </div>
+          <div className="rounded-lg border p-4 bg-muted/50">
             <div className="flex flex-col">
               <span className="font-medium">{organization.name}</span>
               <span className="text-sm text-muted-foreground">@{organization.slug}</span>
