@@ -1,6 +1,6 @@
 import { lazy } from 'react'
 import { Navigate } from 'react-router-dom'
-import { LayoutDashboard, Users as UsersIcon, HelpCircle, Building2, type LucideIcon } from 'lucide-react'
+import { LayoutDashboard, Users as UsersIcon, HelpCircle, Building2, KeyRound, type LucideIcon } from 'lucide-react'
 import type { Feature } from '~/dashboard.config.type'
 
 // Lazy load components for better performance
@@ -9,6 +9,7 @@ const Dashboard = lazy(() => import('@/app/dashboard/page'))
 const Users = lazy(() => import('@/app/users/page'))
 const Organizations = lazy(() => import('@/app/organizations/page'))
 const OrganizationDetail = lazy(() => import('@/app/organizations/[orgId]/page'))
+const ApiKeys = lazy(() => import('@/app/api-keys/page'))
 const FAQs = lazy(() => import('@/app/faqs/page'))
 
 // Auth pages
@@ -81,6 +82,13 @@ export const routes: RouteConfig[] = [
     path: "/organizations/:orgId",
     element: <OrganizationDetail />,
     hide: true
+  },
+  {
+    path: "/api-keys",
+    element: <ApiKeys />,
+    title: "API Keys",
+    icon: KeyRound,
+    requiresFeature: "api-key"
   },
   {
     path: "/faqs",

@@ -1,4 +1,4 @@
-export type Feature = 'admin' | 'organizations'
+export type Feature = 'admin' | 'organizations' | 'api-key'
 
 export interface Config {
     /**

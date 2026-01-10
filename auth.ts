@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import { admin, organization } from "better-auth/plugins";
+import { admin, organization, apiKey } from "better-auth/plugins";
 import Database from "better-sqlite3";
 
 export const auth = betterAuth({
@@ -8,7 +8,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [admin(), organization()],
+  plugins: [admin(), organization(), apiKey()],
   database: new Database("./data.db"),
   trustedOrigins: [
     'http://localhost:5173'
