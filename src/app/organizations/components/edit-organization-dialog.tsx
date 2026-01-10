@@ -27,6 +27,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { authClient } from "@/lib/auth-client"
+import { generateSlug } from "@/lib/slug"
 import type { FullOrganization } from "../types"
 
 const editOrganizationFormSchema = z.object({
@@ -148,7 +149,16 @@ export function EditOrganizationDialog({
                 <FormItem>
                   <FormLabel>Organization Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Acme Corporation" {...field} />
+                    <Input
+                      placeholder="Acme Corporation"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e)
+                        // Auto-generate slug from name
+                        const newSlug = generateSlug(e.target.value)
+                        form.setValue("slug", newSlug)
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

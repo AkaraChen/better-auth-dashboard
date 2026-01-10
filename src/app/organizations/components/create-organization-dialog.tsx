@@ -27,6 +27,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { authClient } from "@/lib/auth-client"
+import { generateSlug } from "@/lib/slug"
 
 const createOrganizationFormSchema = z.object({
   name: z.string().min(1, { message: "Organization name is required" }),
@@ -64,14 +65,6 @@ export function CreateOrganizationDialog({
       metadata: "",
     },
   })
-
-  // Generate slug from name
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "")
-  }
 
   const handleNameChange = (name: string) => {
     const slug = generateSlug(name)
