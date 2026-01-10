@@ -4,7 +4,8 @@ import {
   EllipsisVertical,
   LogOut,
 } from "lucide-react"
-import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
+import * as m from "@/paraglide/messages"
 
 import {
   Avatar,
@@ -25,6 +26,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { signOut } from "@/lib/auth-client"
 
 export function NavUser({
   user,
@@ -36,6 +38,12 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const navigate = useNavigate()
+
+  const handleSignOut = async () => {
+    await signOut()
+    navigate("/auth/sign-in")
+  }
 
   return (
     <SidebarMenu>
@@ -94,11 +102,9 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild className="cursor-pointer">
-              <Link to="/sign-in">
-                <LogOut />
-                Log out
-              </Link>
+            <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+              <LogOut />
+              {m.sidebar_logout()}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

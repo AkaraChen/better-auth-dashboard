@@ -22,10 +22,11 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { signIn } from "@/lib/auth-client"
+import * as m from "@/paraglide/messages"
 
 const loginFormSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.string().email(m.auth_signIn_validation_invalidEmail()),
+  password: z.string().min(6, m.auth_signIn_validation_passwordMin()),
 })
 
 type LoginFormValues = z.infer<typeof loginFormSchema>
@@ -61,9 +62,9 @@ export function LoginForm1({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardTitle className="text-xl">{m.auth_signIn_title()}</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            {m.auth_signIn_description()}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -76,11 +77,11 @@ export function LoginForm1({
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{m.auth_signIn_email()}</FormLabel>
                         <FormControl>
                           <Input
                             type="email"
-                            placeholder="test@example.com"
+                            placeholder={m.auth_signIn_emailPlaceholder()}
                             {...field}
                           />
                         </FormControl>
@@ -94,12 +95,12 @@ export function LoginForm1({
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center">
-                          <FormLabel>Password</FormLabel>
+                          <FormLabel>{m.auth_signIn_password()}</FormLabel>
                           <a
                             href="/auth/forgot-password"
                             className="ml-auto text-sm underline-offset-4 hover:underline"
                           >
-                            Forgot your password?
+                            {m.auth_signIn_forgotPassword()}
                           </a>
                         </div>
                         <FormControl>
@@ -110,13 +111,13 @@ export function LoginForm1({
                     )}
                   />
                   <Button type="submit" className="w-full cursor-pointer">
-                    Login
+                    {m.auth_signIn_button()}
                   </Button>
                 </div>
                 <div className="text-center text-sm">
-                  Don&apos;t have an account?{" "}
+                  {m.auth_signIn_noAccount()}{" "}
                   <a href="/auth/sign-up" className="underline underline-offset-4">
-                    Sign up
+                    {m.auth_signIn_signUpLink()}
                   </a>
                 </div>
               </div>
@@ -125,8 +126,8 @@ export function LoginForm1({
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        {m.auth_signIn_terms()} <a href="#">{m.auth_signIn_termsLink()}</a>{" "}
+        {m.auth_signIn_and()} <a href="#">{m.auth_signIn_privacyLink()}</a>.
       </div>
     </div>
   )

@@ -6,6 +6,7 @@ import { Link } from "react-router-dom"
 import { Logo } from "@/components/logo"
 import config from "~/dashboard.config"
 import { routes, type RouteConfig } from "@/config/routes"
+import * as m from "@/paraglide/messages"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -56,13 +57,13 @@ const filterVisibleRoutes = (
   })
 }
 
-// Static navigation groups for items not in routes (Auth, Errors, etc.)
-const staticNavGroups = [
+// Get static navigation groups for items not in routes (Auth, Errors, etc.)
+const getStaticNavGroups = () => [
   {
-    label: "Pages",
+    label: m.sidebar_pages(),
     items: [
       {
-        title: "Settings",
+        title: m.sidebar_settings(),
         url: "/settings/appearance",
         icon: Settings,
       },
@@ -100,13 +101,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const appItems = visibleRoutes.map(convertRouteToNavItem)
     if (appItems.length > 0) {
       groups.push({
-        label: "Apps",
+        label: m.sidebar_apps(),
         items: appItems,
       })
     }
 
     // Add static navigation groups
-    groups.push(...staticNavGroups)
+    groups.push(...getStaticNavGroups())
 
     return groups
   }, [visibleRoutes])
@@ -123,7 +124,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{config.brand}</span>
-                  <span className="truncate text-xs">Admin Dashboard</span>
+                  <span className="truncate text-xs">{m.sidebar_adminDashboard()}</span>
                 </div>
               </Link>
             </SidebarMenuButton>

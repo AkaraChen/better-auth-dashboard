@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { authClient } from "@/lib/auth-client"
+import * as m from "@/paraglide/messages"
 
 export function ForgotPasswordForm1({
   className,
@@ -35,10 +36,10 @@ export function ForgotPasswordForm1({
     setIsLoading(false)
 
     if (error) {
-      setMessage("Error sending reset email. Please try again.")
+      setMessage(m.auth_forgotPassword_error())
       console.error("Forgot password error:", error)
     } else {
-      setMessage("If an account exists with this email, a password reset link has been sent.")
+      setMessage(m.auth_forgotPassword_success())
     }
   }
 
@@ -46,9 +47,9 @@ export function ForgotPasswordForm1({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Forgot your password?</CardTitle>
+          <CardTitle className="text-xl">{m.auth_forgotPassword_title()}</CardTitle>
           <CardDescription>
-            Enter your email address and we'll send you a link to reset your password
+            {m.auth_forgotPassword_description()}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -56,27 +57,27 @@ export function ForgotPasswordForm1({
             <div className="grid gap-6">
               <div className="grid gap-6">
                 <div className="grid gap-3">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{m.auth_forgotPassword_email()}</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="m@example.com"
+                    placeholder={m.auth_forgotPassword_emailPlaceholder()}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
                 <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
-                  {isLoading ? "Sending..." : "Send Reset Link"}
+                  {isLoading ? m.auth_forgotPassword_buttonSending() : m.auth_forgotPassword_button()}
                 </Button>
                 {message && (
                   <p className="text-sm text-center text-muted-foreground">{message}</p>
                 )}
               </div>
               <div className="text-center text-sm">
-                Remember your password?{" "}
+                {m.auth_forgotPassword_rememberPassword()}{" "}
                 <a href="/auth/sign-in" className="underline underline-offset-4">
-                  Back to sign in
+                  {m.auth_forgotPassword_backToSignIn()}
                 </a>
               </div>
             </div>

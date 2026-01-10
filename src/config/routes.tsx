@@ -2,6 +2,7 @@ import { lazy } from 'react'
 import { Navigate } from 'react-router-dom'
 import { LayoutDashboard, Users as UsersIcon, HelpCircle, Building2, KeyRound, type LucideIcon } from 'lucide-react'
 import type { Feature } from '~/dashboard.config.type'
+import * as m from '@/paraglide/messages'
 
 // Lazy load components for better performance
 const Landing = lazy(() => import('@/app/landing/page'))
@@ -40,7 +41,7 @@ export interface RouteConfig {
   requiresRole?: string[]
 }
 
-export const routes: RouteConfig[] = [
+export const getRoutes = (): RouteConfig[] => [
   // Default route - redirect to dashboard
   // Use relative path "dashboard" instead of "/dashboard" for basename compatibility
   {
@@ -59,7 +60,7 @@ export const routes: RouteConfig[] = [
   {
     path: "/dashboard",
     element: <Dashboard />,
-    title: "Dashboard",
+    title: m.dashboard_title(),
     icon: LayoutDashboard
   },
 
@@ -67,14 +68,14 @@ export const routes: RouteConfig[] = [
   {
     path: "/users",
     element: <Users />,
-    title: "Users",
+    title: m.users_title(),
     icon: UsersIcon,
     requiresFeature: "admin"
   },
   {
     path: "/organizations",
     element: <Organizations />,
-    title: "Organizations",
+    title: m.orgs_title(),
     icon: Building2,
     requiresFeature: "organizations"
   },
@@ -86,7 +87,7 @@ export const routes: RouteConfig[] = [
   {
     path: "/api-keys",
     element: <ApiKeys />,
-    title: "API Keys",
+    title: m.apiKeys_title(),
     icon: KeyRound,
     requiresFeature: "api-key"
   },
@@ -154,3 +155,6 @@ export const routes: RouteConfig[] = [
     element: <NotFound />
   }
 ]
+
+// Export a default routes array for backward compatibility
+export const routes: RouteConfig[] = getRoutes()

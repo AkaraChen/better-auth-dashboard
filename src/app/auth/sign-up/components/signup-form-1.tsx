@@ -23,27 +23,28 @@ import {
 } from "@/components/ui/form"
 import { Checkbox } from "@/components/ui/checkbox"
 import { signUp } from "@/lib/auth-client"
+import * as m from "@/paraglide/messages"
 
-const signupFormSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string().min(6, "Please confirm your password"),
-  terms: z.boolean().refine(val => val === true, "You must agree to the terms"),
+const getSchema = () => z.object({
+  firstName: z.string().min(1, m.auth_signUp_validation_firstNameRequired()),
+  lastName: z.string().min(1, m.auth_signUp_validation_lastNameRequired()),
+  email: z.string().email(m.auth_signUp_validation_invalidEmail()),
+  password: z.string().min(6, m.auth_signUp_validation_passwordMin()),
+  confirmPassword: z.string().min(6, m.auth_signUp_validation_confirmPassword()),
+  terms: z.boolean().refine(val => val === true, m.auth_signUp_validation_termsRequired()),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: m.auth_signUp_validation_passwordsNotMatch(),
   path: ["confirmPassword"],
 })
 
-type SignupFormValues = z.infer<typeof signupFormSchema>
+type SignupFormValues = z.infer<ReturnType<typeof getSchema>>
 
 export function SignupForm1({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const form = useForm<SignupFormValues>({
-    resolver: zodResolver(signupFormSchema),
+    resolver: zodResolver(getSchema()),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -74,9 +75,9 @@ export function SignupForm1({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Create Account</CardTitle>
+          <CardTitle className="text-xl">{m.auth_signUp_title()}</CardTitle>
           <CardDescription>
-            Enter your information to create a new account
+            {m.auth_signUp_description()}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -90,9 +91,9 @@ export function SignupForm1({
                       name="firstName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>First Name</FormLabel>
+                          <FormLabel>{m.auth_signUp_firstName()}</FormLabel>
                           <FormControl>
-                            <Input placeholder="John" {...field} />
+                            <Input placeholder={m.auth_signUp_firstNamePlaceholder()} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -103,9 +104,9 @@ export function SignupForm1({
                       name="lastName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Last Name</FormLabel>
+                          <FormLabel>{m.auth_signUp_lastName()}</FormLabel>
                           <FormControl>
-                            <Input placeholder="Doe" {...field} />
+                            <Input placeholder={m.auth_signUp_lastNamePlaceholder()} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -117,11 +118,11 @@ export function SignupForm1({
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{m.auth_signUp_email()}</FormLabel>
                         <FormControl>
                           <Input
                             type="email"
-                            placeholder="m@example.com"
+                            placeholder={m.auth_signUp_emailPlaceholder()}
                             {...field}
                           />
                         </FormControl>
@@ -134,7 +135,7 @@ export function SignupForm1({
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>{m.auth_signUp_password()}</FormLabel>
                         <FormControl>
                           <Input type="password" {...field} />
                         </FormControl>
@@ -147,7 +148,7 @@ export function SignupForm1({
                     name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Confirm Password</FormLabel>
+                        <FormLabel>{m.auth_signUp_confirmPassword()}</FormLabel>
                         <FormControl>
                           <Input type="password" {...field} />
                         </FormControl>
@@ -168,13 +169,13 @@ export function SignupForm1({
                           />
                         </FormControl>
                         <FormLabel className="text-sm">
-                          I agree to the terms of service and privacy policy
+                          {m.auth_signUp_terms()}
                         </FormLabel>
                       </FormItem>
                     )}
                   />
                   <Button type="submit" className="w-full cursor-pointer">
-                    Create Account
+                    {m.auth_signUp_button()}
                   </Button>
 
                   <Button variant="outline" className="w-full cursor-pointer" type="button">
@@ -184,13 +185,13 @@ export function SignupForm1({
                         fill="currentColor"
                       />
                     </svg>
-                    Sign up with Google
+                    {m.auth_signUp_googleButton()}
                   </Button>
                 </div>
                 <div className="text-center text-sm">
-                  Already have an account?{" "}
+                  {m.auth_signUp_hasAccount()}{" "}
                   <a href="/auth/sign-in" className="underline underline-offset-4">
-                    Sign in
+                    {m.auth_signUp_signInLink()}
                   </a>
                 </div>
               </div>
@@ -199,8 +200,8 @@ export function SignupForm1({
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        {m.auth_signUp_termsService()} <a href="#">{m.auth_signUp_termsLink()}</a>{" "}
+        {m.auth_signUp_and()} <a href="#">{m.auth_signUp_privacyLink()}</a>.
       </div>
     </div>
   )
