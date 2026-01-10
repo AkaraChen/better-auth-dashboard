@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Plus } from "lucide-react"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
@@ -28,28 +28,38 @@ import {
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { useSession } from "@/lib/auth-client"
 import type { BetterAuthUser } from "../page"
 
 const userFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(8, { message: "Password must be at least 8 characters" }).optional(),
   name: z.string().min(1, { message: "Name is required" }),
-  role: z.string().default("user"),
-  emailVerified: z.boolean().default(false),
+  role: z.enum(["user", "admin"]),
+  emailVerified: z.boolean(),
 })
 
 export type UserFormValues = z.infer<typeof userFormSchema>
 
 interface UserFormDialogProps {
   user?: BetterAuthUser | null
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
   onSubmit: (values: UserFormValues) => Promise<void>
 }
 
-export function UserFormDialog({ user, onSubmit }: UserFormDialogProps) {
-  const [open, setOpen] = useState(false)
+export function UserFormDialog({ user, open: controlledOpen, onOpenChange: controlledOnOpenChange, onSubmit }: UserFormDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { data: session } = useSession()
+  const currentUserId = session?.user?.id
 
   const isEdit = !!user
+  const isEditingSelf = user?.id === currentUserId
+
+  // Controlled or uncontrolled mode
+  const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const setOpen = controlledOnOpenChange || setInternalOpen
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
@@ -57,10 +67,23 @@ export function UserFormDialog({ user, onSubmit }: UserFormDialogProps) {
       email: user?.email || "",
       password: "",
       name: user?.name || "",
-      role: (user as any)?.role || "user",
+      role: (user as any)?.role === "admin" ? "admin" : "user",
       emailVerified: user?.emailVerified || false,
     },
   })
+
+  // Reset form when user prop changes
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        email: user.email,
+        password: "",
+        name: user.name || "",
+        role: (user as any)?.role === "admin" ? "admin" : "user",
+        emailVerified: user.emailVerified || false,
+      })
+    }
+  }, [user, form])
 
   const handleSubmit = async (values: UserFormValues) => {
     try {
@@ -78,7 +101,7 @@ export function UserFormDialog({ user, onSubmit }: UserFormDialogProps) {
   }
 
   const handleOpenChange = (newOpen: boolean) => {
-    if (!newOpen || !isSubmitting) {
+    if (!isSubmitting) {
       setOpen(newOpen)
       if (!newOpen) {
         form.reset()
@@ -86,21 +109,32 @@ export function UserFormDialog({ user, onSubmit }: UserFormDialogProps) {
     }
   }
 
+  // For create mode, show the trigger button
+  const TriggerComponent = !isEdit ? (
+    <Button className="cursor-pointer">
+      <Plus className="mr-2 size-4" />
+      Add User
+    </Button>
+  ) : null
+
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button className="cursor-pointer">
-          <Plus className="mr-2 size-4" />
-          Add User
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      {TriggerComponent && (
+        <DialogTrigger asChild>
+          {TriggerComponent}
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit User" : "Create New User"}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? (isEditingSelf ? "Edit Your Profile" : "Edit User") : "Create New User"}
+          </DialogTitle>
           <DialogDescription>
-            {isEdit
-              ? "Update user information. Click save when you're done."
-              : "Fill in the form to create a new user. Click save when you're done."}
+            {isEditingSelf
+              ? "Update your own profile information. Changes will take effect immediately."
+              : isEdit
+                ? "Update user information. Click save when you're done."
+                : "Fill in the form to create a new user. Click save when you're done."}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

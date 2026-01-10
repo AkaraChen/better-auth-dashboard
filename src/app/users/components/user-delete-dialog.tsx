@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { AlertTriangle, User } from "lucide-react"
+import { AlertTriangle } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useSession } from "@/lib/auth-client"
 import type { BetterAuthUser } from "../page"
 
 interface UserDeleteDialogProps {
@@ -31,6 +32,9 @@ export function UserDeleteDialog({
   onConfirm,
 }: UserDeleteDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false)
+  const { data: session } = useSession()
+  const currentUserId = session?.user?.id
+  const isDeletingSelf = user?.id === currentUserId
 
   const handleConfirm = async () => {
     if (!user) return
@@ -65,10 +69,12 @@ export function UserDeleteDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="size-5 text-destructive" />
-            Delete User
+            {isDeletingSelf ? "Delete Your Account" : "Delete User"}
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this user? This action cannot be undone.
+            {isDeletingSelf
+              ? "Warning: You are about to delete your own account. This action cannot be undone and you will be logged out immediately."
+              : "Are you sure you want to delete this user? This action cannot be undone."}
           </DialogDescription>
         </DialogHeader>
 

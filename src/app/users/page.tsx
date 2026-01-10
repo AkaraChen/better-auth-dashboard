@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { BaseLayout } from "@/components/layouts/base-layout"
 import { AdminDataTable } from "./components/admin-data-table"
-import { UserFormDialog, UserFormValues } from "./components/user-form-dialog"
+import { UserFormDialog, type UserFormValues } from "./components/user-form-dialog"
 import { UserDeleteDialog } from "./components/user-delete-dialog"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
@@ -34,23 +34,25 @@ export default function AdminUsersPage() {
   const [userToDelete, setUserToDelete] = useState<BetterAuthUser | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [userToEdit, setUserToEdit] = useState<BetterAuthUser | null>(null)
-  const [isEditMode, setIsEditMode] = useState(false)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
 
   const fetchUsers = async () => {
     try {
       setLoading(true)
       setError(null)
       const response = await authClient.admin.listUsers({
-        limit: pagination.limit,
-        offset: pagination.offset,
-        sortBy: "createdAt",
-        sortDirection: "desc"
+        query: {
+          limit: String(pagination.limit),
+          offset: pagination.offset,
+          sortBy: "createdAt",
+          sortDirection: "desc"
+        }
       })
 
       if (response.error) {
         setError(response.error.message || "Failed to fetch users")
       } else if (response.data) {
-        setUsers(response.data.users || [])
+        setUsers(response.data.users as BetterAuthUser[] || [])
         setTotalCount(response.data.total || 0)
       }
     } catch (err) {
@@ -71,8 +73,10 @@ export default function AdminUsersPage() {
         email: values.email,
         password: values.password!,
         name: values.name,
-        role: values.role,
-        emailVerified: values.emailVerified,
+        role: (values.role || "user") as "admin" | "user",
+        data: {
+          emailVerified: values.emailVerified,
+        },
       })
 
       if (result.error) {
@@ -93,7 +97,7 @@ export default function AdminUsersPage() {
         data: {
           email: values.email,
           name: values.name,
-          role: values.role,
+          role: (values.role || "user") as "admin" | "user",
           emailVerified: values.emailVerified,
         }
       })
@@ -164,13 +168,13 @@ export default function AdminUsersPage() {
   }
 
   const openCreateDialog = () => {
-    setIsEditMode(false)
     setUserToEdit(null)
+    setEditDialogOpen(false)
   }
 
   const openEditDialog = (user: BetterAuthUser) => {
-    setIsEditMode(true)
     setUserToEdit(user)
+    setEditDialogOpen(true)
   }
 
   const openDeleteDialog = (userId: string) => {
@@ -182,7 +186,7 @@ export default function AdminUsersPage() {
   }
 
   const handleFormSubmit = async (values: UserFormValues) => {
-    if (isEditMode && userToEdit) {
+    if (userToEdit) {
       await handleUpdateUser(userToEdit.id, values)
     } else {
       await handleCreateUser(values)
@@ -200,7 +204,6 @@ export default function AdminUsersPage() {
           loading={loading}
           error={error}
           totalCount={totalCount}
-          pagination={pagination}
           onCreateUser={openCreateDialog}
           onUpdateUser={openEditDialog}
           onDeleteUser={openDeleteDialog}
@@ -212,7 +215,9 @@ export default function AdminUsersPage() {
 
         {/* Create/Edit User Dialog */}
         <UserFormDialog
-          user={isEditMode ? userToEdit : undefined}
+          user={userToEdit}
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
           onSubmit={handleFormSubmit}
         />
 

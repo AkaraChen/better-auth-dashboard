@@ -57,14 +57,12 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import type { BetterAuthUser } from "../page"
-import type { UserFormValues } from "./user-form-dialog"
 
 interface AdminDataTableProps {
   users: BetterAuthUser[]
   loading: boolean
   error: string | null
   totalCount: number
-  pagination: { limit: number; offset: number }
   onCreateUser: () => void
   onUpdateUser: (user: BetterAuthUser) => void
   onDeleteUser: (userId: string) => void
@@ -79,7 +77,6 @@ export function AdminDataTable({
   loading,
   error,
   totalCount,
-  pagination,
   onCreateUser,
   onUpdateUser,
   onDeleteUser,
@@ -318,11 +315,12 @@ export function AdminDataTable({
     },
   })
 
-  const statusFilter = table.getColumn("banned")?.getFilterValue() as string
+  const statusFilter = table.getColumn("banned")?.getFilterValue() as boolean | undefined
 
-  const handlePageSizeChange = (newPageSize: number) => {
-    table.setPageSize(newPageSize)
-    onPaginationChange(newPageSize, 0)
+  const handlePageSizeChange = (newPageSize: string) => {
+    const size = Number(newPageSize)
+    table.setPageSize(size)
+    onPaginationChange(size, 0)
   }
 
   const handlePageChange = (direction: "next" | "previous") => {
@@ -335,7 +333,7 @@ export function AdminDataTable({
   }
 
   const handleStatusFilterChange = (value: string) => {
-    table.getColumn("banned")?.setFilterValue(value === "all" ? "" : value === "banned")
+    table.getColumn("banned")?.setFilterValue(value === "all" ? undefined : value === "banned")
   }
 
   return (
