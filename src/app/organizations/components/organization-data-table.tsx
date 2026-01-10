@@ -17,8 +17,11 @@ import {
   Building2,
   ChevronDown,
   Eye,
+  Pencil,
+  Plus,
   RefreshCw,
   Search,
+  Trash2,
   Users,
   Mail,
   CheckCircle,
@@ -33,6 +36,8 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
@@ -57,13 +62,16 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import type { FullOrganization } from "../page"
+import type { FullOrganization } from "../types"
 
 interface OrganizationDataTableProps {
   organizations: FullOrganization[]
   loading: boolean
   error: string | null
   onRefresh: () => void
+  onCreate?: () => void
+  onEdit: (organization: FullOrganization) => void
+  onDelete: (organizationId: string) => void
 }
 
 export function OrganizationDataTable({
@@ -71,6 +79,9 @@ export function OrganizationDataTable({
   loading,
   error,
   onRefresh,
+  onCreate,
+  onEdit,
+  onDelete,
 }: OrganizationDataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -199,15 +210,52 @@ export function OrganizationDataTable({
       cell: ({ row }) => {
         const org = row.original
         return (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 cursor-pointer"
-            onClick={() => setExpandedOrgId(expandedOrgId === org.id ? null : org.id)}
-          >
-            <Eye className="size-4" />
-            <span className="sr-only">View details</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 cursor-pointer"
+              onClick={() => setExpandedOrgId(expandedOrgId === org.id ? null : org.id)}
+            >
+              <Eye className="size-4" />
+              <span className="sr-only">View details</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 cursor-pointer"
+              onClick={() => onEdit(org)}
+            >
+              <Pencil className="size-4" />
+              <span className="sr-only">Edit</span>
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 cursor-pointer">
+                  <ChevronDown className="size-4" />
+                  <span className="sr-only">More actions</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => onEdit(org)}
+                >
+                  <Pencil className="mr-2 size-4" />
+                  Edit Organization
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  className="cursor-pointer"
+                  onClick={() => onDelete(org.id)}
+                >
+                  <Trash2 className="mr-2 size-4" />
+                  Delete Organization
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         )
       },
     },
@@ -251,6 +299,16 @@ export function OrganizationDataTable({
           </div>
         </div>
         <div className="flex items-center space-x-2">
+          {onCreate && (
+            <Button
+              onClick={onCreate}
+              disabled={loading}
+              className="cursor-pointer"
+            >
+              <Plus className="mr-2 size-4" />
+              Add Organization
+            </Button>
+          )}
           <Button
             variant="outline"
             onClick={onRefresh}
@@ -362,7 +420,7 @@ export function OrganizationDataTable({
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                     <div>
                                       <span className="text-muted-foreground">ID: </span>
-                                      <span className="font-mono">{org.id}</span>
+                                      <span className="font-mono text-xs">{org.id}</span>
                                     </div>
                                     <div>
                                       <span className="text-muted-foreground">Name: </span>
@@ -379,7 +437,7 @@ export function OrganizationDataTable({
                                     {org.logo && (
                                       <div className="md:col-span-2">
                                         <span className="text-muted-foreground">Logo: </span>
-                                        <span>{org.logo}</span>
+                                        <span className="text-xs break-all">{org.logo}</span>
                                       </div>
                                     )}
                                     {org.metadata && Object.keys(org.metadata).length > 0 && (

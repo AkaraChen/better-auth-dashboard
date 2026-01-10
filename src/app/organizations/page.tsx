@@ -1,49 +1,15 @@
 "use client"
 
+import { useState } from "react"
 import { BaseLayout } from "@/components/layouts/base-layout"
 import { OrganizationDataTable } from "./components/organization-data-table"
+import { CreateOrganizationDialog } from "./components/create-organization-dialog"
+import { EditOrganizationDialog } from "./components/edit-organization-dialog"
+import { DeleteOrganizationDialog } from "./components/delete-organization-dialog"
 import { authClient } from "@/lib/auth-client"
 import { useSession } from "@/lib/auth-client"
-import { useQuery } from "@tanstack/react-query"
-
-export interface Organization {
-  id: string
-  name: string
-  slug: string
-  logo?: string | null
-  metadata?: any
-  createdAt: Date
-}
-
-export interface OrganizationMember {
-  id: string
-  organizationId: string
-  role: string
-  createdAt: Date
-  userId: string
-  user: {
-    id: string
-    name: string | null
-    email: string
-    image: string | null
-  }
-}
-
-export interface OrganizationInvitation {
-  id: string
-  organizationId: string
-  email: string
-  role: string
-  status: "pending" | "accepted" | "rejected" | "canceled"
-  expiresAt: Date | null
-  createdAt: Date
-  inviterId: string
-}
-
-export interface FullOrganization extends Organization {
-  members: OrganizationMember[]
-  invitations: OrganizationInvitation[]
-}
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import type { FullOrganization } from "./types"
 
 async function fetchFullOrganizations(): Promise<FullOrganization[]> {
   // First, get the list of organizations the user is a member of
@@ -79,6 +45,18 @@ async function fetchFullOrganizations(): Promise<FullOrganization[]> {
 
 export default function OrganizationsPage() {
   const { data: session } = useSession()
+  const queryClient = useQueryClient()
+
+  // Dialog states
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [editDialogState, setEditDialogState] = useState<{
+    open: boolean
+    organization: FullOrganization | null
+  }>({ open: false, organization: null })
+  const [deleteDialogState, setDeleteDialogState] = useState<{
+    open: boolean
+    organizationId: string | null
+  }>({ open: false, organizationId: null })
 
   const {
     data: organizations = [],
@@ -92,6 +70,18 @@ export default function OrganizationsPage() {
     staleTime: 1000 * 60 * 5, // 5 minutes
   })
 
+  const handleCreate = () => {
+    setCreateDialogOpen(true)
+  }
+
+  const handleEdit = (organization: FullOrganization) => {
+    setEditDialogState({ open: true, organization })
+  }
+
+  const handleDelete = (organizationId: string) => {
+    setDeleteDialogState({ open: true, organizationId })
+  }
+
   return (
     <BaseLayout
       title="Organizations"
@@ -103,8 +93,42 @@ export default function OrganizationsPage() {
           loading={isLoading}
           error={error?.message || null}
           onRefresh={() => refetch()}
+          onCreate={handleCreate}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
         />
       </div>
+
+      {/* Create Organization Dialog */}
+      <CreateOrganizationDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      />
+
+      {/* Edit Organization Dialog */}
+      <EditOrganizationDialog
+        organization={editDialogState.organization}
+        open={editDialogState.open}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditDialogState({ open: false, organization: null })
+          }
+        }}
+      />
+
+      {/* Delete Organization Dialog */}
+      <DeleteOrganizationDialog
+        organization={organizations.find((org) => org.id === deleteDialogState.organizationId) || null}
+        open={deleteDialogState.open}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeleteDialogState({ open: false, organizationId: null })
+          }
+        }}
+      />
     </BaseLayout>
   )
 }
+
+// Re-export types
+export type * from "./types"
