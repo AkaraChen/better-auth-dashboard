@@ -1,5 +1,5 @@
 const config = {
-    brand: 'ShadcnStore',
+    brand: 'Better Auth Dashboard',
 }
 
 export default config;
