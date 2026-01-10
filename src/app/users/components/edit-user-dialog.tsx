@@ -27,7 +27,6 @@ import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { useSession } from "@/lib/auth-client"
 import type { BetterAuthUser } from "../page"
 
 const editUserFormSchema = z.object({
@@ -54,9 +53,6 @@ export function EditUserDialog({
 }: EditUserDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { data: session } = useSession()
-  const currentUserId = session?.user?.id
-  const isEditingSelf = user?.id === currentUserId
 
   const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
   const setOpen = controlledOnOpenChange || setInternalOpen
@@ -136,28 +132,14 @@ export function EditUserDialog({
                 )}
               </Avatar>
               <div>
-                <DialogTitle>
-                  {isEditingSelf ? "Edit Your Profile" : "Edit User"}
-                </DialogTitle>
+                <DialogTitle>Edit User</DialogTitle>
               </div>
             </div>
           )}
           <DialogDescription>
-            {isEditingSelf
-              ? "Update your own profile information. Changes will take effect immediately."
-              : "Update user information. Click save when you're done."}
+            Update user information. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-
-        {isEditingSelf && (
-          <Alert variant="default" className="mb-4 border-amber-200 bg-amber-50">
-            <AlertCircle className="h-4 w-4 text-amber-600" />
-            <AlertTitle className="text-amber-800">Editing Your Own Profile</AlertTitle>
-            <AlertDescription className="text-amber-700">
-              Changes to your role, email, or verification status will affect your account immediately.
-            </AlertDescription>
-          </Alert>
-        )}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
