@@ -1,5 +1,7 @@
 import { lazy } from 'react'
 import { Navigate } from 'react-router-dom'
+import { LayoutDashboard, Users as UsersIcon, HelpCircle, type LucideIcon } from 'lucide-react'
+import type { Feature } from '~/dashboard.config.type'
 
 // Lazy load components for better performance
 const Landing = lazy(() => import('@/app/landing/page'))
@@ -26,6 +28,13 @@ export interface RouteConfig {
   path: string
   element: React.ReactNode
   children?: RouteConfig[]
+
+  // Navigation display configuration
+  title?: string
+  icon?: LucideIcon
+  hide?: boolean
+  requiresFeature?: Feature
+  requiresRole?: string[]
 }
 
 export const routes: RouteConfig[] = [
@@ -45,17 +54,24 @@ export const routes: RouteConfig[] = [
   // Dashboard Routes
   {
     path: "/dashboard",
-    element: <Dashboard />
+    element: <Dashboard />,
+    title: "Dashboard",
+    icon: LayoutDashboard
   },
 
   // Content Pages
   {
     path: "/users",
-    element: <Users />
+    element: <Users />,
+    title: "Users",
+    icon: UsersIcon,
+    requiresFeature: "admin"
   },
   {
     path: "/faqs",
-    element: <FAQs />
+    element: <FAQs />,
+    title: "FAQs",
+    icon: HelpCircle
   },
 
   // Authentication Routes

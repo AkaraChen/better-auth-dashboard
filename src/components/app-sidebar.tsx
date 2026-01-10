@@ -2,17 +2,15 @@
 
 import * as React from "react"
 import {
-  LayoutDashboard,
   Shield,
   AlertTriangle,
   Settings,
-  HelpCircle,
   LayoutTemplate,
-  Users,
 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Logo } from "@/components/logo"
 import config from "~/dashboard.config"
+import { routes, type RouteConfig } from "@/config/routes"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -27,97 +25,107 @@ import {
 } from "@/components/ui/sidebar"
 import { useSession } from "@/lib/auth-client"
 
-const data = {
-  navGroups: [
-    {
-      label: "Dashboards",
-      items: [
-        {
-          title: "Dashboard",
-          url: "/dashboard",
-          icon: LayoutDashboard,
-        },
-      ],
-    },
-    {
-      label: "Apps",
-      items: [
-        {
-          title: "Users",
-          url: "/users",
-          icon: Users,
-        },
-      ],
-    },
-    {
-      label: "Pages",
-      items: [
-        {
-          title: "Landing",
-          url: "/landing",
-          target: "_blank",
-          icon: LayoutTemplate,
-        },
-        {
-          title: "Auth Pages",
-          url: "#",
-          icon: Shield,
-          items: [
-            {
-              title: "Sign In",
-              url: "/auth/sign-in",
-            },
-            {
-              title: "Sign Up",
-              url: "/auth/sign-up",
-            },
-            {
-              title: "Forgot Password",
-              url: "/auth/forgot-password",
-            },
-          ],
-        },
-        {
-          title: "Errors",
-          url: "#",
-          icon: AlertTriangle,
-          items: [
-            {
-              title: "Unauthorized",
-              url: "/errors/unauthorized",
-            },
-            {
-              title: "Forbidden",
-              url: "/errors/forbidden",
-            },
-            {
-              title: "Not Found",
-              url: "/errors/not-found",
-            },
-            {
-              title: "Internal Server Error",
-              url: "/errors/internal-server-error",
-            },
-            {
-              title: "Under Maintenance",
-              url: "/errors/under-maintenance",
-            },
-          ],
-        },
-        {
-          title: "Settings",
-          url: "/settings/appearance",
-          icon: Settings,
-        },
-        {
-          title: "FAQs",
-          url: "/faqs",
-          icon: HelpCircle,
-        },
-      ],
-    },
-  ],
+// Convert route config to nav items format
+const convertRouteToNavItem = (route: RouteConfig) => ({
+  title: route.title!,
+  url: route.path,
+  icon: route.icon,
+})
+
+// Filter routes based on config and session
+const filterVisibleRoutes = (
+  routes: RouteConfig[],
+  session: ReturnType<typeof useSession>["data"]
+): RouteConfig[] => {
+  return routes.filter((route) => {
+    // Skip routes without a title (not meant for navigation)
+    if (!route.title) return false
+
+    // Skip hidden routes
+    if (route.hide) return false
+
+    // Check feature requirements
+    if (route.requiresFeature && !config.features.includes(route.requiresFeature)) {
+      return false
+    }
+
+    // Check role requirements
+    if (route.requiresRole) {
+      const userRole = session?.user?.role
+      if (!userRole || !route.requiresRole.includes(userRole)) {
+        return false
+      }
+    }
+
+    return true
+  })
 }
+
+// Static navigation groups for items not in routes (Auth, Errors, etc.)
+const staticNavGroups = [
+  {
+    label: "Pages",
+    items: [
+      {
+        title: "Landing",
+        url: "/landing",
+        target: "_blank" as const,
+        icon: LayoutTemplate,
+      },
+      {
+        title: "Auth Pages",
+        url: "#",
+        icon: Shield,
+        items: [
+          {
+            title: "Sign In",
+            url: "/auth/sign-in",
+          },
+          {
+            title: "Sign Up",
+            url: "/auth/sign-up",
+          },
+          {
+            title: "Forgot Password",
+            url: "/auth/forgot-password",
+          },
+        ],
+      },
+      {
+        title: "Errors",
+        url: "#",
+        icon: AlertTriangle,
+        items: [
+          {
+            title: "Unauthorized",
+            url: "/errors/unauthorized",
+          },
+          {
+            title: "Forbidden",
+            url: "/errors/forbidden",
+          },
+          {
+            title: "Not Found",
+            url: "/errors/not-found",
+          },
+          {
+            title: "Internal Server Error",
+            url: "/errors/internal-server-error",
+          },
+          {
+            title: "Under Maintenance",
+            url: "/errors/under-maintenance",
+          },
+        ],
+      },
+      {
+        title: "Settings",
+        url: "/settings/appearance",
+        icon: Settings,
+      },
+    ],
+  },
+]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession()
@@ -134,6 +142,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         email: "guest@example.com",
         avatar: "",
       }
+
+  // Filter routes based on features and roles
+  const visibleRoutes = React.useMemo(
+    () => filterVisibleRoutes(routes, session),
+    [session]
+  )
+
+  // Build navigation groups from visible routes and static items
+  const navGroups = React.useMemo(() => {
+    const groups: Array<{ label: string; items: Array<any> }> = []
+
+    // Main apps from routes
+    const appItems = visibleRoutes.map(convertRouteToNavItem)
+    if (appItems.length > 0) {
+      groups.push({
+        label: "Apps",
+        items: appItems,
+      })
+    }
+
+    // Add static navigation groups
+    groups.push(...staticNavGroups)
+
+    return groups
+  }, [visibleRoutes])
 
   return (
     <Sidebar {...props}>
@@ -155,7 +188,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {data.navGroups.map((group) => (
+        {navGroups.map((group) => (
           <NavMain key={group.label} label={group.label} items={group.items} />
         ))}
       </SidebarContent>
