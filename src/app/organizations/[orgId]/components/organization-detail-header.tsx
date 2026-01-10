@@ -35,14 +35,12 @@ export function OrganizationDetailHeader({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex items-start justify-between">
+          <div className="flex items-start gap-4">
             <Link to="/organizations">
-              <Button variant="ghost" size="sm" asChild>
-                <span className="cursor-pointer">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back
-                </span>
+              <Button variant="ghost" size="sm" className="cursor-pointer">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back
               </Button>
             </Link>
             <div className="flex items-center gap-3">
@@ -59,7 +57,7 @@ export function OrganizationDetailHeader({
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-start gap-2">
             <Button variant="outline" onClick={onRefresh} className="cursor-pointer">
               <RefreshCw className="h-4 w-4" />
             </Button>

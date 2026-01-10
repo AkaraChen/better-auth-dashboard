@@ -50,7 +50,8 @@ export const routes: RouteConfig[] = [
   // Landing Page
   {
     path: "/landing",
-    element: <Landing />
+    element: <Landing />,
+    hide: true
   },
 
   // Dashboard Routes
@@ -85,43 +86,52 @@ export const routes: RouteConfig[] = [
     path: "/faqs",
     element: <FAQs />,
     title: "FAQs",
-    icon: HelpCircle
+    icon: HelpCircle,
+    hide: true
   },
 
   // Authentication Routes
   {
     path: "/auth/sign-in",
-    element: <SignIn />
+    element: <SignIn />,
+    hide: true
   },
   {
     path: "/auth/sign-up",
-    element: <SignUp />
+    element: <SignUp />,
+    hide: true
   },
   {
     path: "/auth/forgot-password",
-    element: <ForgotPassword />
+    element: <ForgotPassword />,
+    hide: true
   },
 
   // Error Pages
   {
     path: "/errors/unauthorized",
-    element: <Unauthorized />
+    element: <Unauthorized />,
+    hide: true
   },
   {
     path: "/errors/forbidden",
-    element: <Forbidden />
+    element: <Forbidden />,
+    hide: true
   },
   {
     path: "/errors/not-found",
-    element: <NotFound />
+    element: <NotFound />,
+    hide: true
   },
   {
     path: "/errors/internal-server-error",
-    element: <InternalServerError />
+    element: <InternalServerError />,
+    hide: true
   },
   {
     path: "/errors/under-maintenance",
-    element: <UnderMaintenance />
+    element: <UnderMaintenance />,
+    hide: true
   },
 
   // Settings Routes

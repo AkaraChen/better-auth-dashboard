@@ -1,12 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {
-  Shield,
-  AlertTriangle,
-  Settings,
-  LayoutTemplate,
-} from "lucide-react"
+import { Settings } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Logo } from "@/components/logo"
 import config from "~/dashboard.config"
@@ -66,58 +61,6 @@ const staticNavGroups = [
   {
     label: "Pages",
     items: [
-      {
-        title: "Landing",
-        url: "/landing",
-        target: "_blank" as const,
-        icon: LayoutTemplate,
-      },
-      {
-        title: "Auth Pages",
-        url: "#",
-        icon: Shield,
-        items: [
-          {
-            title: "Sign In",
-            url: "/auth/sign-in",
-          },
-          {
-            title: "Sign Up",
-            url: "/auth/sign-up",
-          },
-          {
-            title: "Forgot Password",
-            url: "/auth/forgot-password",
-          },
-        ],
-      },
-      {
-        title: "Errors",
-        url: "#",
-        icon: AlertTriangle,
-        items: [
-          {
-            title: "Unauthorized",
-            url: "/errors/unauthorized",
-          },
-          {
-            title: "Forbidden",
-            url: "/errors/forbidden",
-          },
-          {
-            title: "Not Found",
-            url: "/errors/not-found",
-          },
-          {
-            title: "Internal Server Error",
-            url: "/errors/internal-server-error",
-          },
-          {
-            title: "Under Maintenance",
-            url: "/errors/under-maintenance",
-          },
-        ],
-      },
       {
         title: "Settings",
         url: "/settings/appearance",

@@ -1,9 +1,6 @@
 "use client"
 
-import {
-  Building2,
-  Link as LinkIcon,
-} from "lucide-react"
+import { Building2 } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -73,54 +70,10 @@ export function OrganizationOverviewTab({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <LinkIcon className="h-5 w-5" />
-            Additional Information
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {organization.logo && (
-            <div>
-              <label className="text-sm text-muted-foreground">Logo URL</label>
-              <div className="flex items-center gap-2 mt-1">
-                <img
-                  src={organization.logo}
-                  alt=""
-                  className="h-8 w-8 rounded"
-                />
-                <a
-                  href={organization.logo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-primary hover:underline"
-                >
-                  {organization.logo}
-                </a>
-              </div>
-            </div>
-          )}
-          {organization.metadata && Object.keys(organization.metadata).length > 0 ? (
-            <div>
-              <label className="text-sm text-muted-foreground">Metadata</label>
-              <pre className="mt-1 text-xs bg-muted p-3 rounded overflow-x-auto">
-                {JSON.stringify(organization.metadata, null, 2)}
-              </pre>
-            </div>
-          ) : (
-            <div>
-              <label className="text-sm text-muted-foreground">Metadata</label>
-              <p className="text-sm text-muted-foreground italic">No metadata</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card className="md:col-span-2">
-        <CardHeader>
           <CardTitle className="text-lg">Quick Stats</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="text-center p-4 bg-muted rounded-lg">
               <p className="text-2xl font-bold">{organization.members.length}</p>
               <p className="text-sm text-muted-foreground">Total Members</p>
