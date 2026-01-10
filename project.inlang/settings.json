@@ -11,6 +11,5 @@
   ],
   "plugin.inlang.messageFormat": {
     "pathPattern": "./messages/{locale}.json"
-  },
-  "strategy": ["preferredLanguage", "cookie", "baseLocale"]
+  }
 }

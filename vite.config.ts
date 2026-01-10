@@ -6,7 +6,11 @@ import { defineConfig } from "vite"
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [paraglideVitePlugin({ project: './project.inlang', outdir: './src/paraglide' }),react(), tailwindcss()],
+  plugins: [
+    paraglideVitePlugin({ project: './project.inlang', outdir: './src/paraglide', strategy: ['preferredLanguage', 'baseLocale'] }),
+    react(), 
+    tailwindcss()
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
