@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import { BaseLayout } from "@/components/layouts/base-layout"
 import { AdminDataTable } from "./components/admin-data-table"
-import { UserFormDialog, type UserFormValues } from "./components/user-form-dialog"
+import { CreateUserDialog, type CreateUserFormValues } from "./components/create-user-dialog"
+import { EditUserDialog, type EditUserFormValues } from "./components/edit-user-dialog"
 import { UserDeleteDialog } from "./components/user-delete-dialog"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
@@ -33,8 +34,11 @@ export default function AdminUsersPage() {
   // Dialog states
   const [userToDelete, setUserToDelete] = useState<BetterAuthUser | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [userToEdit, setUserToEdit] = useState<BetterAuthUser | null>(null)
-  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [editDialogState, setEditDialogState] = useState<{
+    open: boolean
+    user: BetterAuthUser | null
+  }>({ open: false, user: null })
 
   const fetchUsers = async () => {
     try {
@@ -67,7 +71,7 @@ export default function AdminUsersPage() {
   }, [pagination])
 
   // Create user
-  const handleCreateUser = async (values: UserFormValues) => {
+  const handleCreateUser = async (values: CreateUserFormValues) => {
     try {
       const result = await authClient.admin.createUser({
         email: values.email,
@@ -90,7 +94,7 @@ export default function AdminUsersPage() {
   }
 
   // Update user
-  const handleUpdateUser = async (userId: string, values: UserFormValues) => {
+  const handleUpdateUser = async (userId: string, values: EditUserFormValues) => {
     try {
       const result = await authClient.admin.updateUser({
         userId,
@@ -168,13 +172,15 @@ export default function AdminUsersPage() {
   }
 
   const openCreateDialog = () => {
-    setUserToEdit(null)
-    setEditDialogOpen(false)
+    setCreateDialogOpen(true)
   }
 
   const openEditDialog = (user: BetterAuthUser) => {
-    setUserToEdit(user)
-    setEditDialogOpen(true)
+    setEditDialogState({ open: true, user })
+  }
+
+  const closeEditDialog = () => {
+    setEditDialogState({ open: false, user: null })
   }
 
   const openDeleteDialog = (userId: string) => {
@@ -182,14 +188,6 @@ export default function AdminUsersPage() {
     if (user) {
       setUserToDelete(user)
       setDeleteDialogOpen(true)
-    }
-  }
-
-  const handleFormSubmit = async (values: UserFormValues) => {
-    if (userToEdit) {
-      await handleUpdateUser(userToEdit.id, values)
-    } else {
-      await handleCreateUser(values)
     }
   }
 
@@ -213,12 +211,19 @@ export default function AdminUsersPage() {
           onPaginationChange={handlePaginationChange}
         />
 
-        {/* Create/Edit User Dialog */}
-        <UserFormDialog
-          user={userToEdit}
-          open={editDialogOpen}
-          onOpenChange={setEditDialogOpen}
-          onSubmit={handleFormSubmit}
+        {/* Create User Dialog */}
+        <CreateUserDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+          onSubmit={handleCreateUser}
+        />
+
+        {/* Edit User Dialog */}
+        <EditUserDialog
+          user={editDialogState.user}
+          open={editDialogState.open}
+          onOpenChange={closeEditDialog}
+          onSubmit={handleUpdateUser}
         />
 
         {/* Delete Confirmation Dialog */}

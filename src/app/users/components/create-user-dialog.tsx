@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Plus } from "lucide-react"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
@@ -28,72 +28,54 @@ import {
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { useSession } from "@/lib/auth-client"
-import type { BetterAuthUser } from "../page"
 
-const userFormSchema = z.object({
+const createUserFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }).optional(),
+  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
   name: z.string().min(1, { message: "Name is required" }),
-  role: z.enum(["user", "admin"]),
-  emailVerified: z.boolean(),
+  role: z.enum(["user", "admin"]).default("user"),
+  emailVerified: z.boolean().default(false),
 })
 
-export type UserFormValues = z.infer<typeof userFormSchema>
+export type CreateUserFormValues = z.infer<typeof createUserFormSchema>
 
-interface UserFormDialogProps {
-  user?: BetterAuthUser | null
+interface CreateUserDialogProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
-  onSubmit: (values: UserFormValues) => Promise<void>
+  onSubmit: (values: CreateUserFormValues) => Promise<void>
 }
 
-export function UserFormDialog({ user, open: controlledOpen, onOpenChange: controlledOnOpenChange, onSubmit }: UserFormDialogProps) {
+export function CreateUserDialog({
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+  onSubmit,
+}: CreateUserDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { data: session } = useSession()
-  const currentUserId = session?.user?.id
 
-  const isEdit = !!user
-  const isEditingSelf = user?.id === currentUserId
-
-  // Controlled or uncontrolled mode
   const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
   const setOpen = controlledOnOpenChange || setInternalOpen
 
-  const form = useForm<UserFormValues>({
-    resolver: zodResolver(userFormSchema),
+  const form = useForm<CreateUserFormValues>({
+    resolver: zodResolver(createUserFormSchema),
     defaultValues: {
-      email: user?.email || "",
+      email: "",
       password: "",
-      name: user?.name || "",
-      role: (user as any)?.role === "admin" ? "admin" : "user",
-      emailVerified: user?.emailVerified || false,
+      name: "",
+      role: "user",
+      emailVerified: false,
     },
   })
 
-  // Reset form when user prop changes
-  useEffect(() => {
-    if (user) {
-      form.reset({
-        email: user.email,
-        password: "",
-        name: user.name || "",
-        role: (user as any)?.role === "admin" ? "admin" : "user",
-        emailVerified: user.emailVerified || false,
-      })
-    }
-  }, [user, form])
-
-  const handleSubmit = async (values: UserFormValues) => {
+  const handleSubmit = async (values: CreateUserFormValues) => {
     try {
       setIsSubmitting(true)
       await onSubmit(values)
-      toast.success(isEdit ? "User updated successfully" : "User created successfully")
+      toast.success("User created successfully")
       setOpen(false)
       form.reset()
     } catch (error) {
-      toast.error(isEdit ? "Failed to update user" : "Failed to create user")
+      toast.error("Failed to create user")
       console.error(error)
     } finally {
       setIsSubmitting(false)
@@ -109,32 +91,19 @@ export function UserFormDialog({ user, open: controlledOpen, onOpenChange: contr
     }
   }
 
-  // For create mode, show the trigger button
-  const TriggerComponent = !isEdit ? (
-    <Button className="cursor-pointer">
-      <Plus className="mr-2 size-4" />
-      Add User
-    </Button>
-  ) : null
-
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      {TriggerComponent && (
-        <DialogTrigger asChild>
-          {TriggerComponent}
-        </DialogTrigger>
-      )}
+      <DialogTrigger asChild>
+        <Button className="cursor-pointer">
+          <Plus className="mr-2 size-4" />
+          Add User
+        </Button>
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>
-            {isEdit ? (isEditingSelf ? "Edit Your Profile" : "Edit User") : "Create New User"}
-          </DialogTitle>
+          <DialogTitle>Create New User</DialogTitle>
           <DialogDescription>
-            {isEditingSelf
-              ? "Update your own profile information. Changes will take effect immediately."
-              : isEdit
-                ? "Update user information. Click save when you're done."
-                : "Fill in the form to create a new user. Click save when you're done."}
+            Fill in the form to create a new user. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -152,21 +121,19 @@ export function UserFormDialog({ user, open: controlledOpen, onOpenChange: contr
                 </FormItem>
               )}
             />
-            {!isEdit && (
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="••••••••" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="name"

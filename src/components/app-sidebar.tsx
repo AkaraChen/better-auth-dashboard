@@ -3,15 +3,10 @@
 import * as React from "react"
 import {
   LayoutDashboard,
-  Mail,
-  CheckSquare,
-  MessageCircle,
-  Calendar,
   Shield,
   AlertTriangle,
   Settings,
   HelpCircle,
-  CreditCard,
   LayoutTemplate,
   Users,
 } from "lucide-react"
@@ -47,26 +42,6 @@ const data = {
     {
       label: "Apps",
       items: [
-        {
-          title: "Mail",
-          url: "/mail",
-          icon: Mail,
-        },
-        {
-          title: "Tasks",
-          url: "/tasks",
-          icon: CheckSquare,
-        },
-        {
-          title: "Chat",
-          url: "/chat",
-          icon: MessageCircle,
-        },
-        {
-          title: "Calendar",
-          url: "/calendar",
-          icon: Calendar,
-        },
         {
           title: "Users",
           url: "/users",
@@ -131,44 +106,13 @@ const data = {
         },
         {
           title: "Settings",
-          url: "#",
+          url: "/settings/appearance",
           icon: Settings,
-          items: [
-            {
-              title: "User Settings",
-              url: "/settings/user",
-            },
-            {
-              title: "Account Settings",
-              url: "/settings/account",
-            },
-            {
-              title: "Plans & Billing",
-              url: "/settings/billing",
-            },
-            {
-              title: "Appearance",
-              url: "/settings/appearance",
-            },
-            {
-              title: "Notifications",
-              url: "/settings/notifications",
-            },
-            {
-              title: "Connections",
-              url: "/settings/connections",
-            },
-          ],
         },
         {
           title: "FAQs",
           url: "/faqs",
           icon: HelpCircle,
-        },
-        {
-          title: "Pricing",
-          url: "/pricing",
-          icon: CreditCard,
         },
       ],
     },

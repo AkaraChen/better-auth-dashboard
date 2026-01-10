@@ -4,13 +4,8 @@ import { Navigate } from 'react-router-dom'
 // Lazy load components for better performance
 const Landing = lazy(() => import('@/app/landing/page'))
 const Dashboard = lazy(() => import('@/app/dashboard/page'))
-const Mail = lazy(() => import('@/app/mail/page'))
-const Tasks = lazy(() => import('@/app/tasks/page'))
-const Chat = lazy(() => import('@/app/chat/page'))
-const Calendar = lazy(() => import('@/app/calendar/page'))
 const Users = lazy(() => import('@/app/users/page'))
 const FAQs = lazy(() => import('@/app/faqs/page'))
-const Pricing = lazy(() => import('@/app/pricing/page'))
 
 // Auth pages
 const SignIn = lazy(() => import('@/app/auth/sign-in/page'))
@@ -25,12 +20,7 @@ const InternalServerError = lazy(() => import('@/app/errors/internal-server-erro
 const UnderMaintenance = lazy(() => import('@/app/errors/under-maintenance/page'))
 
 // Settings pages
-const UserSettings = lazy(() => import('@/app/settings/user/page'))
-const AccountSettings = lazy(() => import('@/app/settings/account/page'))
-const BillingSettings = lazy(() => import('@/app/settings/billing/page'))
 const AppearanceSettings = lazy(() => import('@/app/settings/appearance/page'))
-const NotificationSettings = lazy(() => import('@/app/settings/notifications/page'))
-const ConnectionSettings = lazy(() => import('@/app/settings/connections/page'))
 
 export interface RouteConfig {
   path: string
@@ -58,24 +48,6 @@ export const routes: RouteConfig[] = [
     element: <Dashboard />
   },
 
-  // Application Routes
-  {
-    path: "/mail",
-    element: <Mail />
-  },
-  {
-    path: "/tasks",
-    element: <Tasks />
-  },
-  {
-    path: "/chat",
-    element: <Chat />
-  },
-  {
-    path: "/calendar",
-    element: <Calendar />
-  },
-
   // Content Pages
   {
     path: "/users",
@@ -84,10 +56,6 @@ export const routes: RouteConfig[] = [
   {
     path: "/faqs",
     element: <FAQs />
-  },
-  {
-    path: "/pricing",
-    element: <Pricing />
   },
 
   // Authentication Routes
@@ -128,28 +96,8 @@ export const routes: RouteConfig[] = [
 
   // Settings Routes
   {
-    path: "/settings/user",
-    element: <UserSettings />
-  },
-  {
-    path: "/settings/account",
-    element: <AccountSettings />
-  },
-  {
-    path: "/settings/billing",
-    element: <BillingSettings />
-  },
-  {
     path: "/settings/appearance",
     element: <AppearanceSettings />
-  },
-  {
-    path: "/settings/notifications",
-    element: <NotificationSettings />
-  },
-  {
-    path: "/settings/connections",
-    element: <ConnectionSettings />
   },
 
   // Catch-all route for 404
