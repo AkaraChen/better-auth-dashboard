@@ -35,14 +35,14 @@ export function OrganizationDetailHeader({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex items-start gap-4">
-            <Link to="/organizations">
-              <Button variant="ghost" size="sm" className="cursor-pointer">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
-              </Button>
-            </Link>
+        <div className="space-y-4">
+          <Link to="/organizations">
+            <Button variant="ghost" size="sm" className="cursor-pointer">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+          </Link>
+          <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               {organization.logo && (
                 <img
@@ -56,15 +56,15 @@ export function OrganizationDetailHeader({
                 <p className="text-sm text-muted-foreground">@{organization.slug}</p>
               </div>
             </div>
-          </div>
-          <div className="flex items-start gap-2">
-            <Button variant="outline" onClick={onRefresh} className="cursor-pointer">
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-            <Button onClick={() => setEditDialogOpen(true)} className="cursor-pointer">
-              <Edit className="mr-2 h-4 w-4" />
-              Edit
-            </Button>
+            <div className="flex items-start gap-2">
+              <Button variant="outline" onClick={onRefresh} className="cursor-pointer">
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+              <Button onClick={() => setEditDialogOpen(true)} className="cursor-pointer">
+                <Edit className="mr-2 h-4 w-4" />
+                Edit
+              </Button>
+            </div>
           </div>
         </div>
       </CardHeader>
