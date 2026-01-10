@@ -26,7 +26,7 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use(express.json());
 
 // Error handler
-app.use((err: any, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: any, _req: express.Request, res: express.Response) => {
   console.error("\x1b[31m%s\x1b[0m", "Error:", err);
   res.status(err.status || 500).json({
     error: err.message || "Internal Server Error",

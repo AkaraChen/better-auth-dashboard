@@ -8,7 +8,7 @@ import { EditOrganizationDialog } from "./components/edit-organization-dialog"
 import { DeleteOrganizationDialog } from "./components/delete-organization-dialog"
 import { authClient } from "@/lib/auth-client"
 import { useSession } from "@/lib/auth-client"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import type { FullOrganization } from "./types"
 import * as m from "@/paraglide/messages"
 
@@ -46,7 +46,6 @@ async function fetchFullOrganizations(): Promise<FullOrganization[]> {
 
 export default function OrganizationsPage() {
   const { data: session } = useSession()
-  const queryClient = useQueryClient()
 
   // Dialog states
   const [createDialogOpen, setCreateDialogOpen] = useState(false)

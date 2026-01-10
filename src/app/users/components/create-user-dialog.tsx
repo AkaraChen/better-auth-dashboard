@@ -31,7 +31,7 @@ import { Switch } from "@/components/ui/switch"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 
 const createUserFormSchema = z.object({
-  email: z.string().email({ message: m.users_validation_invalidEmail() }),
+  email: z.email({ message: m.users_validation_invalidEmail() }),
   password: z.string().min(8, { message: m.users_validation_passwordMin() }),
   name: z.string().min(1, { message: m.users_validation_nameRequired() }),
   role: z.enum(["user", "admin"]).default("user"),
@@ -57,7 +57,7 @@ export function CreateUserDialog({
   const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
   const setOpen = controlledOnOpenChange || setInternalOpen
 
-  const form = useForm<CreateUserFormValues>({
+  const form = useForm({
     resolver: zodResolver(createUserFormSchema),
     defaultValues: {
       email: "",

@@ -38,7 +38,6 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
@@ -61,7 +60,6 @@ import {
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import type { FullOrganization } from "../types"
 import * as m from "@/paraglide/messages"
@@ -384,7 +382,6 @@ export function OrganizationDataTable({
               table.getRowModel().rows.map((row) => {
                 const org = row.original
                 const isExpanded = expandedOrgId === org.id
-                const StatusIcon = getInvitationStatusIcon("pending")
                 return (
                   <>
                     <TableRow key={row.id}>

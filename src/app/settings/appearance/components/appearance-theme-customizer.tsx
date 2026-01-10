@@ -20,7 +20,7 @@ import type { ImportedTheme } from '@/types/theme-customizer'
 import "./circular-transition.css"
 
 export function AppearanceThemeCustomizer() {
-  const { applyImportedTheme, isDarkMode, resetTheme, applyRadius, setBrandColorsValues, applyTheme, applyTweakcnTheme, brandColorsValues, handleColorChange } = useThemeManager()
+  const { applyImportedTheme, isDarkMode, applyRadius, setBrandColorsValues, applyTheme, applyTweakcnTheme, brandColorsValues, handleColorChange } = useThemeManager()
   const { toggleTheme } = useCircularTransition()
   const { config: sidebarConfig, updateConfig: updateSidebarConfig } = useSidebarConfig()
   const { toggleSidebar, state: sidebarState } = useSidebar()

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import * as m from "@/paraglide/messages"
-import { Key, RefreshCw } from "lucide-react"
+import { Key } from "lucide-react"
 import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -104,7 +104,9 @@ export function SetPasswordDialog({
             {m.users_dialog_password_title()}
           </DialogTitle>
           <DialogDescription>
-            {m.users_dialog_password_description({ name: user?.name || user?.email })}
+            {m.users_dialog_password_description({
+              name: user?.name || m.users_table_unnamedUser(),
+            })}
           </DialogDescription>
         </DialogHeader>
 
@@ -112,7 +114,6 @@ export function SetPasswordDialog({
           <div className="flex items-center gap-3 rounded-lg border p-4 bg-muted/50">
             <Avatar className="h-12 w-12">
               {user.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img src={user.image} alt={user.name || user.email} />
               ) : (
                 <AvatarFallback className="text-sm font-medium">

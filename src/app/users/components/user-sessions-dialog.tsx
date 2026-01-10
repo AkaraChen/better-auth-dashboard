@@ -33,7 +33,6 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import {
   Tooltip,
   TooltipContent,

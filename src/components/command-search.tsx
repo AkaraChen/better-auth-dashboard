@@ -5,11 +5,9 @@ import { useNavigate } from "react-router-dom"
 import { Command as CommandPrimitive } from "cmdk"
 import {
   Search,
-  LayoutPanelLeft,
   LayoutDashboard,
   Shield,
   AlertTriangle,
-  Settings,
   HelpCircle,
   Palette,
   type LucideIcon,

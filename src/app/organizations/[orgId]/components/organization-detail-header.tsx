@@ -77,11 +77,11 @@ export function OrganizationDetailHeader({
             <code className="text-xs">{organization.id}</code>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">{m.orgs_detail_members()}:</span>
+            <span className="text-muted-foreground">{m.orgs_detail_members({ count: organization.members.length })}:</span>
             <Badge variant="secondary">{organization.members.length}</Badge>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">{m.orgs_detail_invitations()}:</span>
+            <span className="text-muted-foreground">{m.orgs_detail_invitations({ count: organization.invitations.filter((i: { status: string }) => i.status === "pending").length })}:</span>
             <Badge variant="secondary">
               {organization.invitations.filter((i: { status: string }) => i.status === "pending").length}
             </Badge>
