@@ -31,13 +31,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { useSession } from "@/lib/auth-client"
 
 const data = {
-  user: {
-    name: config.brand,
-    email: "store@example.com",
-    avatar: "",
-  },
   navGroups: [
     {
       label: "Dashboards",
@@ -186,6 +182,21 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession()
+
+  // Get user from session or use default values
+  const user = session?.user
+    ? {
+        name: session.user.name || config.brand,
+        email: session.user.email || "user@example.com",
+        avatar: session.user.image || "",
+      }
+    : {
+        name: config.brand,
+        email: "guest@example.com",
+        avatar: "",
+      }
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -211,7 +222,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   )
