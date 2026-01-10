@@ -3,7 +3,6 @@
 import * as React from "react"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
-import { SiteFooter } from "@/components/site-footer"
 import { useSidebarConfig } from "@/hooks/use-sidebar-config"
 import {
   SidebarInset,
@@ -20,16 +19,17 @@ export function BaseLayout({ children, title, description }: BaseLayoutProps) {
   const { config } = useSidebarConfig()
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "16rem",
-          "--sidebar-width-icon": "3rem", 
-          "--header-height": "calc(var(--spacing) * 14)",
-        } as React.CSSProperties
-      }
-      className={config.collapsible === "none" ? "sidebar-none-mode" : ""}
-    >
+    <div className="flex h-screen overflow-hidden">
+      <SidebarProvider
+        style={
+          {
+            "--sidebar-width": "16rem",
+            "--sidebar-width-icon": "3rem",
+            "--header-height": "calc(var(--spacing) * 14)",
+          } as React.CSSProperties
+        }
+        className={config.collapsible === "none" ? "sidebar-none-mode" : ""}
+      >
       {config.side === "left" ? (
         <>
           <AppSidebar 
@@ -39,8 +39,8 @@ export function BaseLayout({ children, title, description }: BaseLayoutProps) {
           />
           <SidebarInset>
             <SiteHeader />
-            <div className="flex flex-1 flex-col">
-              <div className="@container/main flex flex-1 flex-col gap-2">
+            <div className="flex flex-1 flex-col overflow-hidden">
+              <div className="@container/main flex-1 overflow-y-auto">
                 <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                   {title && (
                     <div className="px-4 lg:px-6">
@@ -56,15 +56,14 @@ export function BaseLayout({ children, title, description }: BaseLayoutProps) {
                 </div>
               </div>
             </div>
-            <SiteFooter />
           </SidebarInset>
         </>
       ) : (
         <>
           <SidebarInset>
             <SiteHeader />
-            <div className="flex flex-1 flex-col">
-              <div className="@container/main flex flex-1 flex-col gap-2">
+            <div className="flex flex-1 flex-col overflow-hidden">
+              <div className="@container/main flex-1 overflow-y-auto">
                 <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                   {title && (
                     <div className="px-4 lg:px-6">
@@ -80,15 +79,15 @@ export function BaseLayout({ children, title, description }: BaseLayoutProps) {
                 </div>
               </div>
             </div>
-            <SiteFooter />
           </SidebarInset>
-          <AppSidebar 
-            variant={config.variant} 
-            collapsible={config.collapsible} 
-            side={config.side} 
+          <AppSidebar
+            variant={config.variant}
+            collapsible={config.collapsible}
+            side={config.side}
           />
         </>
       )}
-    </SidebarProvider>
+      </SidebarProvider>
+    </div>
   )
 }
