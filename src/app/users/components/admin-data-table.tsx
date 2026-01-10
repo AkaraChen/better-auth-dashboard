@@ -253,13 +253,6 @@ export function AdminDataTable({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() => onUpdateUser(user)}
-                >
-                  <Eye className="mr-2 size-4" />
-                  View Details
-                </DropdownMenuItem>
                 {user.banned ? (
                   <DropdownMenuItem
                     className="cursor-pointer"
