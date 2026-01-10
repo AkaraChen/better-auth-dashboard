@@ -27,12 +27,14 @@ import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { MultiSelectCombobox } from "@/components/ui/multi-select-combobox"
 import type { BetterAuthUser } from "../page"
+import config from "~/dashboard.config"
 
 const editUserFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   name: z.string().min(1, { message: "Name is required" }),
-  role: z.enum(["user", "admin"]),
+  role: z.string().min(1, { message: "At least one role is required" }),
   emailVerified: z.boolean(),
 })
 
@@ -45,6 +47,24 @@ interface EditUserDialogProps {
   onSubmit: (userId: string, values: EditUserFormValues) => Promise<void>
 }
 
+// Parse comma-separated roles to array
+const parseRoles = (roleString?: string): string[] => {
+  if (!roleString) return ['user']
+  return roleString.split(',').map(r => r.trim()).filter(Boolean)
+}
+
+// Convert array to comma-separated string
+const serializeRoles = (roles: string[]): string => {
+  return roles.join(',')
+}
+
+// Get all available roles (default + custom from config)
+const getAllRoles = (): string[] => {
+  const defaultRoles = ['user', 'admin']
+  const customRoles = config.customRoles || []
+  return [...new Set([...defaultRoles, ...customRoles])]
+}
+
 export function EditUserDialog({
   user,
   open: controlledOpen,
@@ -53,6 +73,7 @@ export function EditUserDialog({
 }: EditUserDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [roleArray, setRoleArray] = useState<string[]>(['user'])
 
   const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
   const setOpen = controlledOnOpenChange || setInternalOpen
@@ -62,17 +83,19 @@ export function EditUserDialog({
     defaultValues: {
       email: user?.email || "",
       name: user?.name || "",
-      role: (user as any)?.role === "admin" ? "admin" : "user",
+      role: serializeRoles(['user']),
       emailVerified: user?.emailVerified || false,
     },
   })
 
   useEffect(() => {
     if (user) {
+      const parsedRoles = parseRoles((user as any)?.role)
+      setRoleArray(parsedRoles)
       form.reset({
         email: user.email,
         name: user.name || "",
-        role: (user as any)?.role === "admin" ? "admin" : "user",
+        role: serializeRoles(parsedRoles),
         emailVerified: user.emailVerified || false,
       })
     }
@@ -83,10 +106,15 @@ export function EditUserDialog({
 
     try {
       setIsSubmitting(true)
-      await onSubmit(user.id, values)
+      // Override role with the serialized array
+      await onSubmit(user.id, {
+        ...values,
+        role: serializeRoles(roleArray),
+      })
       toast.success("User updated successfully")
       setOpen(false)
       form.reset()
+      setRoleArray(['user'])
     } catch (error) {
       toast.error("Failed to update user")
       console.error(error)
@@ -100,6 +128,7 @@ export function EditUserDialog({
       setOpen(newOpen)
       if (!newOpen) {
         form.reset()
+        setRoleArray(['user'])
       }
     }
   }
@@ -176,7 +205,17 @@ export function EditUserDialog({
                 <FormItem>
                   <FormLabel>Role</FormLabel>
                   <FormControl>
-                    <Input placeholder="user" {...field} />
+                    <MultiSelectCombobox
+                      value={roleArray}
+                      onChange={(values) => {
+                        setRoleArray(values)
+                        field.onChange(serializeRoles(values))
+                      }}
+                      options={getAllRoles()}
+                      placeholder="Select roles..."
+                      allowCustom={true}
+                      disabled={isSubmitting}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

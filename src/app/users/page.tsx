@@ -120,7 +120,7 @@ export default function AdminUsersPage() {
         data: {
           email: values.email,
           name: values.name,
-          role: (values.role || "user") as "admin" | "user",
+          role: values.role || "user",
           emailVerified: values.emailVerified,
         }
       })
