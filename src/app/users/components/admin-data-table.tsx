@@ -194,6 +194,30 @@ export function AdminDataTable({
       },
     },
     {
+      accessorKey: "role",
+      header: "Roles",
+      cell: ({ row }) => {
+        const role = (row.original as any).role as string | undefined
+        if (!role) {
+          return <span className="text-muted-foreground text-sm">user</span>
+        }
+        const roles = role.split(',').map(r => r.trim()).filter(Boolean)
+        return (
+          <div className="flex flex-wrap gap-1">
+            {roles.map((r, i) => (
+              <Badge
+                key={i}
+                variant="outline"
+                className="text-xs font-normal"
+              >
+                {r}
+              </Badge>
+            ))}
+          </div>
+        )
+      },
+    },
+    {
       accessorKey: "banned",
       header: "Status",
       cell: ({ row }) => {
