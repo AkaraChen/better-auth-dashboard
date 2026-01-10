@@ -10,6 +10,7 @@ import { authClient } from "@/lib/auth-client"
 import { useSession } from "@/lib/auth-client"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import type { FullOrganization } from "./types"
+import * as m from "@/paraglide/messages"
 
 async function fetchFullOrganizations(): Promise<FullOrganization[]> {
   // First, get the list of organizations the user is a member of
@@ -84,8 +85,8 @@ export default function OrganizationsPage() {
 
   return (
     <BaseLayout
-      title="Organizations"
-      description="Manage your organizations and teams"
+      title={m.orgs_title()}
+      description={m.orgs_description()}
     >
       <div className="@container/main px-4 lg:px-6">
         <OrganizationDataTable

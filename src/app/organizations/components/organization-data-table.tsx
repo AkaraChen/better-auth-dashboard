@@ -64,6 +64,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import type { FullOrganization } from "../types"
+import * as m from "@/paraglide/messages"
 
 interface OrganizationDataTableProps {
   organizations: FullOrganization[]
@@ -153,7 +154,7 @@ export function OrganizationDataTable({
   const columns: ColumnDef<FullOrganization>[] = [
     {
       accessorKey: "name",
-      header: "Organization",
+      header: m.orgs_table_orgName,
       cell: ({ row }) => {
         const org = row.original
         return (
@@ -166,7 +167,7 @@ export function OrganizationDataTable({
     },
     {
       accessorKey: "members",
-      header: "Members",
+      header: m.orgs_table_members,
       cell: ({ row }) => {
         const members = row.original.members
         return (
@@ -179,7 +180,7 @@ export function OrganizationDataTable({
     },
     {
       accessorKey: "invitations",
-      header: "Pending Invitations",
+      header: m.orgs_table_pendingInvitations,
       cell: ({ row }) => {
         const pendingInvitations = row.original.invitations.filter(
           (inv) => inv.status === "pending"
@@ -194,7 +195,7 @@ export function OrganizationDataTable({
     },
     {
       accessorKey: "createdAt",
-      header: "Created",
+      header: m.orgs_table_created,
       cell: ({ row }) => {
         const date = row.getValue("createdAt") as Date
         return <span className="text-sm">{formatDate(date)}</span>
@@ -202,7 +203,7 @@ export function OrganizationDataTable({
     },
     {
       id: "actions",
-      header: "Actions",
+      header: m.orgs_table_actions,
       cell: ({ row }) => {
         const org = row.original
         return (
@@ -215,7 +216,7 @@ export function OrganizationDataTable({
             >
               <Link to={`/organizations/${org.id}`}>
                 <Eye className="size-4" />
-                <span className="sr-only">View details</span>
+                <span className="sr-only">{m.orgs_table_actions()}</span>
               </Link>
             </Button>
             <Button
@@ -241,7 +242,7 @@ export function OrganizationDataTable({
                   onClick={() => onDelete(org.id)}
                 >
                   <Trash2 className="mr-2 size-4" />
-                  Delete Organization
+                  {m.orgs_form_buttonDelete()}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -280,7 +281,7 @@ export function OrganizationDataTable({
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search organizations..."
+              placeholder={m.orgs_table_search()}
               value={globalFilter ?? ""}
               onChange={(event) => setGlobalFilter(String(event.target.value))}
               className="pl-9"
@@ -296,7 +297,7 @@ export function OrganizationDataTable({
               className="cursor-pointer"
             >
               <Plus className="mr-2 size-4" />
-              Add Organization
+              {m.orgs_table_addOrg()}
             </Button>
           )}
           <Button
@@ -306,7 +307,7 @@ export function OrganizationDataTable({
             className="cursor-pointer"
           >
             <RefreshCw className={`mr-2 size-4 ${loading ? "animate-spin" : ""}`} />
-            Refresh
+            {m.orgs_table_refresh()}
           </Button>
         </div>
       </div>
@@ -315,12 +316,12 @@ export function OrganizationDataTable({
       <div className="grid gap-2 sm:grid-cols-1 sm:gap-4">
         <div className="space-y-2">
           <Label htmlFor="column-visibility" className="text-sm font-medium">
-            Column Visibility
+            {m.orgs_table_columnVisibility()}
           </Label>
           <DropdownMenu>
             <DropdownMenuTrigger asChild id="column-visibility">
               <Button variant="outline" className="cursor-pointer w-full sm:w-auto">
-                Columns <ChevronDown className="ml-2 size-4" />
+                {m.orgs_table_columns()} <ChevronDown className="ml-2 size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -375,7 +376,7 @@ export function OrganizationDataTable({
                 <TableCell colSpan={columns.length} className="h-24 text-center">
                   <div className="flex items-center justify-center">
                     <RefreshCw className="mr-2 size-4 animate-spin" />
-                    Loading organizations...
+                    {m.orgs_table_loading()}
                   </div>
                 </TableCell>
               </TableRow>
@@ -405,34 +406,34 @@ export function OrganizationDataTable({
                                 <div>
                                   <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
                                     <Building2 className="h-4 w-4" />
-                                    Organization Details
+                                    {m.orgs_detail_basicInfo()}
                                   </h4>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                     <div>
-                                      <span className="text-muted-foreground">ID: </span>
+                                      <span className="text-muted-foreground">{m.orgs_detail_id()} </span>
                                       <span className="font-mono text-xs">{org.id}</span>
                                     </div>
                                     <div>
-                                      <span className="text-muted-foreground">Name: </span>
+                                      <span className="text-muted-foreground">{m.orgs_detail_name()} </span>
                                       <span>{org.name}</span>
                                     </div>
                                     <div>
-                                      <span className="text-muted-foreground">Slug: </span>
+                                      <span className="text-muted-foreground">{m.orgs_detail_slug()} </span>
                                       <span className="font-mono">@{org.slug}</span>
                                     </div>
                                     <div>
-                                      <span className="text-muted-foreground">Created: </span>
+                                      <span className="text-muted-foreground">{m.orgs_detail_createdAt()} </span>
                                       <span>{formatDateTime(org.createdAt)}</span>
                                     </div>
                                     {org.logo && (
                                       <div className="md:col-span-2">
-                                        <span className="text-muted-foreground">Logo: </span>
+                                        <span className="text-muted-foreground">{m.orgs_detail_logo()} </span>
                                         <span className="text-xs break-all">{org.logo}</span>
                                       </div>
                                     )}
                                     {org.metadata && Object.keys(org.metadata).length > 0 && (
                                       <div className="md:col-span-2">
-                                        <span className="text-muted-foreground">Metadata: </span>
+                                        <span className="text-muted-foreground">{m.orgs_detail_metadata()} </span>
                                         <pre className="mt-1 text-xs bg-background p-2 rounded overflow-x-auto">
                                           {JSON.stringify(org.metadata, null, 2)}
                                         </pre>
@@ -445,7 +446,7 @@ export function OrganizationDataTable({
                                 <div>
                                   <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
                                     <Users className="h-4 w-4" />
-                                    Members ({org.members.length})
+                                    {m.orgs_detail_members({ count: org.members.length })}
                                   </h4>
                                   {org.members.length > 0 ? (
                                     <div className="space-y-2">
@@ -456,7 +457,7 @@ export function OrganizationDataTable({
                                         >
                                           <div>
                                             <div className="font-medium">
-                                              {member.user.name || "Unnamed User"}
+                                              {member.user.name || m.orgs_detail_unnamedUser()}
                                             </div>
                                             <div className="text-sm text-muted-foreground">
                                               {member.user.email}
@@ -467,14 +468,14 @@ export function OrganizationDataTable({
                                               {member.role}
                                             </Badge>
                                             <span className="text-xs text-muted-foreground">
-                                              Joined {formatDate(member.createdAt)}
+                                              {m.orgs_detail_joined({ date: formatDate(member.createdAt) })}
                                             </span>
                                           </div>
                                         </div>
                                       ))}
                                     </div>
                                   ) : (
-                                    <p className="text-sm text-muted-foreground italic">No members yet</p>
+                                    <p className="text-sm text-muted-foreground italic">{m.orgs_detail_noMembers()}</p>
                                   )}
                                 </div>
 
@@ -482,7 +483,7 @@ export function OrganizationDataTable({
                                 <div>
                                   <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
                                     <Mail className="h-4 w-4" />
-                                    Invitations ({org.invitations.length})
+                                    {m.orgs_detail_invitations({ count: org.invitations.length })}
                                   </h4>
                                   {org.invitations.length > 0 ? (
                                     <div className="space-y-2">
@@ -498,7 +499,7 @@ export function OrganizationDataTable({
                                               <div>
                                                 <div className="font-medium">{invitation.email}</div>
                                                 <div className="text-sm text-muted-foreground">
-                                                  Role: {invitation.role}
+                                                  {m.orgs_detail_role()} {invitation.role}
                                                 </div>
                                               </div>
                                             </div>
@@ -508,7 +509,7 @@ export function OrganizationDataTable({
                                                 {invitation.status}
                                               </Badge>
                                               <span className="text-xs text-muted-foreground">
-                                                Sent {formatDateTime(invitation.createdAt)}
+                                                {m.orgs_detail_sent({ date: formatDateTime(invitation.createdAt) })}
                                               </span>
                                             </div>
                                           </div>
@@ -516,7 +517,7 @@ export function OrganizationDataTable({
                                       })}
                                     </div>
                                   ) : (
-                                    <p className="text-sm text-muted-foreground italic">No invitations</p>
+                                    <p className="text-sm text-muted-foreground italic">{m.orgs_detail_noInvitations()}</p>
                                   )}
                                 </div>
                               </div>
@@ -531,7 +532,7 @@ export function OrganizationDataTable({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No organizations found.
+                  {m.orgs_table_noResults()}
                 </TableCell>
               </TableRow>
             )}
@@ -543,7 +544,7 @@ export function OrganizationDataTable({
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex items-center space-x-2">
           <Label htmlFor="page-size" className="text-sm font-medium">
-            Show
+            {m.orgs_table_show()}
           </Label>
           <Select
             value={`${table.getState().pagination.pageSize}`}
@@ -565,14 +566,14 @@ export function OrganizationDataTable({
           </Select>
         </div>
         <div className="flex-1 text-sm text-muted-foreground hidden sm:block">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredSelectedRowModel().rows.length} {m.orgs_table_of()}{" "}
+          {table.getFilteredRowModel().rows.length} {m.orgs_table_rowSelected()}
         </div>
         <div className="flex items-center space-x-6 lg:space-x-8">
           <div className="flex items-center space-x-2 hidden sm:flex">
-            <p className="text-sm font-medium">Page</p>
+            <p className="text-sm font-medium">{m.orgs_table_page()}</p>
             <strong className="text-sm">
-              {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+              {table.getState().pagination.pageIndex + 1} {m.orgs_table_of()} {table.getPageCount()}
             </strong>
           </div>
           <div className="flex items-center space-x-2">
@@ -583,7 +584,7 @@ export function OrganizationDataTable({
               disabled={!table.getCanPreviousPage() || loading}
               className="cursor-pointer"
             >
-              Previous
+              {m.orgs_table_previous()}
             </Button>
             <Button
               variant="outline"
@@ -592,7 +593,7 @@ export function OrganizationDataTable({
               disabled={!table.getCanNextPage() || loading}
               className="cursor-pointer"
             >
-              Next
+              {m.orgs_table_next()}
             </Button>
           </div>
         </div>

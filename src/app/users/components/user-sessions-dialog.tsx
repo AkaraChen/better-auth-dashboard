@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import * as m from "@/paraglide/messages"
 import {
   Monitor,
   Trash2,
@@ -79,7 +80,7 @@ export function UserSessionsDialog({
       })
 
       if (response.error) {
-        setError(response.error.message || "Failed to fetch sessions")
+        setError(response.error.message || m.users_dialog_sessions_failed())
       } else if (response.data) {
         // The response structure should be { sessions: Session[] }
         setSessions(
@@ -87,7 +88,7 @@ export function UserSessionsDialog({
         )
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch sessions")
+      setError(err instanceof Error ? err.message : m.users_dialog_sessions_failed())
     } finally {
       setLoading(false)
     }
@@ -101,14 +102,14 @@ export function UserSessionsDialog({
       })
 
       if (result.error) {
-        toast.error(result.error.message || "Failed to revoke session")
+        toast.error(result.error.message || m.users_sessions_revokeFailed())
       } else {
-        toast.success("Session revoked successfully")
+        toast.success(m.users_sessions_revokedSuccess())
         // Refresh the sessions list
         await fetchSessions()
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to revoke session")
+      toast.error(err instanceof Error ? err.message : m.users_sessions_revokeFailed())
     } finally {
       setRevoking(null)
     }
@@ -124,14 +125,14 @@ export function UserSessionsDialog({
       })
 
       if (result.error) {
-        toast.error(result.error.message || "Failed to revoke sessions")
+        toast.error(result.error.message || m.users_sessions_revokeAllFailed())
       } else {
-        toast.success("All sessions revoked successfully")
+        toast.success(m.users_sessions_allRevokedSuccess())
         // Refresh the sessions list
         await fetchSessions()
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to revoke sessions")
+      toast.error(err instanceof Error ? err.message : m.users_sessions_revokeAllFailed())
     } finally {
       setRevoking(null)
     }
@@ -158,7 +159,7 @@ export function UserSessionsDialog({
   }
 
   const getUserAgentDisplay = (userAgent: string | null) => {
-    if (!userAgent) return "Unknown"
+    if (!userAgent) return m.users_sessions_unknown()
     const maxLength = 60
     if (userAgent.length <= maxLength) return userAgent
     return userAgent.slice(0, maxLength) + "..."
@@ -176,10 +177,10 @@ export function UserSessionsDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Monitor className="size-5" />
-            User Sessions
+            {m.users_dialog_sessions_title()}
           </DialogTitle>
           <DialogDescription>
-            Manage all active sessions for {user.name || user.email}
+            {m.users_dialog_sessions_description({ email: user.name || user.email })}
           </DialogDescription>
         </DialogHeader>
 
@@ -196,7 +197,7 @@ export function UserSessionsDialog({
             )}
           </Avatar>
           <div className="flex flex-col">
-            <span className="font-medium">{user.name || "Unnamed User"}</span>
+            <span className="font-medium">{user.name || m.users_table_unnamedUser()}</span>
             <span className="text-sm text-muted-foreground">{user.email}</span>
           </div>
         </div>
@@ -216,11 +217,11 @@ export function UserSessionsDialog({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[150px]">IP Address</TableHead>
-                <TableHead>User Agent</TableHead>
-                <TableHead className="w-[140px]">Created</TableHead>
-                <TableHead className="w-[140px]">Expires</TableHead>
-                <TableHead className="w-[80px]">Actions</TableHead>
+                <TableHead className="w-[150px]">{m.users_sessions_ipAddress()}</TableHead>
+                <TableHead>{m.users_sessions_userAgent()}</TableHead>
+                <TableHead className="w-[140px]">{m.users_sessions_created()}</TableHead>
+                <TableHead className="w-[140px]">{m.users_sessions_expires()}</TableHead>
+                <TableHead className="w-[80px]">{m.users_sessions_actions()}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -229,7 +230,7 @@ export function UserSessionsDialog({
                   <TableCell colSpan={5} className="h-24 text-center">
                     <div className="flex items-center justify-center">
                       <RefreshCw className="mr-2 size-4 animate-spin" />
-                      Loading sessions...
+                      {m.users_sessions_loading()}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -238,7 +239,7 @@ export function UserSessionsDialog({
                   <TableCell colSpan={5} className="h-24 text-center">
                     <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
                       <Laptop className="size-8" />
-                      <p>No active sessions found</p>
+                      <p>{m.users_sessions_noResults()}</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -246,7 +247,7 @@ export function UserSessionsDialog({
                 sessions.map((session) => (
                   <TableRow key={session.token}>
                     <TableCell className="font-mono text-xs">
-                      {session.ipAddress || "Unknown"}
+                      {session.ipAddress || m.users_sessions_unknown()}
                     </TableCell>
                     <TableCell>
                       <TooltipProvider>
@@ -274,7 +275,7 @@ export function UserSessionsDialog({
                           variant="secondary"
                           className="mt-1 text-xs text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-900/20"
                         >
-                          Impersonated
+                          {m.users_sessions_impersonated()}
                         </Badge>
                       )}
                     </TableCell>
@@ -296,8 +297,8 @@ export function UserSessionsDialog({
                         }
                         title={
                           isRevokingCurrentSession(session.token)
-                            ? "Cannot revoke current session"
-                            : "Revoke session"
+                            ? m.users_sessions_cannotRevoke()
+                            : m.users_sessions_revoke()
                         }
                       >
                         {revoking === session.token ? (
@@ -305,7 +306,7 @@ export function UserSessionsDialog({
                         ) : (
                           <Trash2 className="size-4" />
                         )}
-                        <span className="sr-only">Revoke session</span>
+                        <span className="sr-only">{m.users_sessions_revoke()}</span>
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -325,12 +326,12 @@ export function UserSessionsDialog({
             {revoking === "all" ? (
               <>
                 <RefreshCw className="mr-2 size-4 animate-spin" />
-                Revoking...
+                {m.users_sessions_revoking()}
               </>
             ) : (
               <>
                 <Trash2 className="mr-2 size-4" />
-                Revoke All Sessions
+                {m.users_sessions_revokeAll()}
               </>
             )}
           </Button>
@@ -340,7 +341,7 @@ export function UserSessionsDialog({
             disabled={revoking !== null}
             className="cursor-pointer"
           >
-            Close
+            {m.users_sessions_close()}
           </Button>
         </DialogFooter>
       </DialogContent>

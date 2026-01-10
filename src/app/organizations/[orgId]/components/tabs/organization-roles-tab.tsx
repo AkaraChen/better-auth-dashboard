@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card"
 import { Shield } from "lucide-react"
 import type { FullOrganization } from "../../../types"
+import * as m from "@/paraglide/messages"
 
 interface OrganizationRolesTabProps {
   organization: FullOrganization
@@ -26,9 +27,9 @@ export function OrganizationRolesTab({
   )
 
   const roles = [
-    { name: "owner", description: "Full access to all organization resources" },
-    { name: "admin", description: "Can manage members and organization settings" },
-    { name: "member", description: "Standard access to organization resources" },
+    { name: "owner", description: m.orgs_roles_owner() },
+    { name: "admin", description: m.orgs_roles_admin() },
+    { name: "member", description: m.orgs_roles_member() },
   ]
 
   return (
@@ -36,14 +37,13 @@ export function OrganizationRolesTab({
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <Shield className="h-5 w-5" />
-          Roles & Permissions
+          {m.orgs_roles_title()}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            This organization uses the default role system. Custom roles can be
-            created by administrators.
+            {m.orgs_roles_description()}
           </p>
           <div className="space-y-3">
             {roles.map((role) => (
@@ -55,7 +55,7 @@ export function OrganizationRolesTab({
                   <div className="flex items-center gap-3">
                     <h4 className="font-medium capitalize">{role.name}</h4>
                     <span className="text-sm text-muted-foreground">
-                      ({roleCounts[role.name] || 0} members)
+                      {m.orgs_roles_membersCount({ count: roleCounts[role.name] || 0 })}
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">

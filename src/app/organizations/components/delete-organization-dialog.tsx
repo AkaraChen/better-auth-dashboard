@@ -17,6 +17,7 @@ import {
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { authClient } from "@/lib/auth-client"
 import type { FullOrganization } from "../types"
+import * as m from "@/paraglide/messages"
 
 interface DeleteOrganizationDialogProps {
   organization: FullOrganization | null
@@ -43,16 +44,16 @@ export function DeleteOrganizationDialog({
       })
 
       if (result.error) {
-        throw new Error(result.error.message || "Failed to delete organization")
+        throw new Error(result.error.message || m.orgs_error_deleteFailed())
       }
 
-      toast.success("Organization deleted successfully")
+      toast.success(m.orgs_toast_deleted())
       onOpenChange(false)
 
       // Invalidate and refetch organizations
       queryClient.invalidateQueries({ queryKey: ["organizations"] })
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to delete organization")
+      toast.error(error instanceof Error ? error.message : m.orgs_error_deleteFailed())
       console.error(error)
     } finally {
       setIsDeleting(false)
@@ -65,11 +66,10 @@ export function DeleteOrganizationDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="size-5 text-destructive" />
-            Delete Organization
+            {m.orgs_dialog_delete_title()}
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this organization? This action cannot be undone.
-            All members, invitations, and organization data will be permanently removed.
+            {m.orgs_dialog_delete_confirm()}
           </DialogDescription>
         </DialogHeader>
 
@@ -89,7 +89,7 @@ export function DeleteOrganizationDialog({
             disabled={isDeleting}
             className="cursor-pointer"
           >
-            Cancel
+            {m.orgs_form_buttonCancel()}
           </Button>
           <Button
             variant="destructive"
@@ -100,12 +100,12 @@ export function DeleteOrganizationDialog({
             {isDeleting ? (
               <>
                 <LoadingSpinner className="mr-2 size-4" />
-                Deleting...
+                {m.orgs_form_buttonDeleting()}
               </>
             ) : (
               <>
                 <Trash2 className="mr-2 size-4" />
-                Delete Organization
+                {m.orgs_form_buttonDelete()}
               </>
             )}
           </Button>

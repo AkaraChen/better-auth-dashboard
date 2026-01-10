@@ -28,12 +28,13 @@ import { Input } from "@/components/ui/input"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { authClient } from "@/lib/auth-client"
 import { generateSlug } from "@/lib/slug"
+import * as m from "@/paraglide/messages"
 
 const createOrganizationFormSchema = z.object({
-  name: z.string().min(1, { message: "Organization name is required" }),
-  slug: z.string().min(1, { message: "Slug is required" })
-    .regex(/^[a-z0-9-]+$/, { message: "Slug must contain only lowercase letters, numbers, and hyphens" }),
-  logo: z.string().url({ message: "Must be a valid URL" }).optional().or(z.literal("")),
+  name: z.string().min(1, { message: m.orgs_validation_nameRequired() }),
+  slug: z.string().min(1, { message: m.orgs_validation_slugRequired() })
+    .regex(/^[a-z0-9-]+$/, { message: m.orgs_validation_slugInvalid() }),
+  logo: z.string().url({ message: m.orgs_validation_logoInvalid() }).optional().or(z.literal("")),
   metadata: z.string().optional(),
 })
 
@@ -81,7 +82,7 @@ export function CreateOrganizationDialog({
         // Slug exists (taken)
         form.setError("slug", {
           type: "manual",
-          message: "This slug is already taken",
+          message: m.orgs_validation_slugTaken(),
         })
       } else {
         // Slug is available
@@ -108,17 +109,17 @@ export function CreateOrganizationDialog({
       })
 
       if (result.error) {
-        throw new Error(result.error.message || "Failed to create organization")
+        throw new Error(result.error.message || m.orgs_error_createFailed())
       }
 
-      toast.success("Organization created successfully")
+      toast.success(m.orgs_toast_created())
       setOpen(false)
       form.reset()
 
       // Invalidate and refetch organizations
       queryClient.invalidateQueries({ queryKey: ["organizations"] })
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to create organization")
+      toast.error(error instanceof Error ? error.message : m.orgs_error_createFailed())
       console.error(error)
     } finally {
       setIsSubmitting(false)
@@ -138,9 +139,9 @@ export function CreateOrganizationDialog({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Organization</DialogTitle>
+          <DialogTitle>{m.orgs_dialog_create_title()}</DialogTitle>
           <DialogDescription>
-            Fill in the form to create a new organization. Click save when you're done.
+            {m.orgs_dialog_create_description()}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -150,10 +151,10 @@ export function CreateOrganizationDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Organization Name</FormLabel>
+                  <FormLabel>{m.orgs_form_name()}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Acme Corporation"
+                      placeholder={m.orgs_form_namePlaceholder()}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e)
@@ -170,10 +171,10 @@ export function CreateOrganizationDialog({
               name="slug"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Slug</FormLabel>
+                  <FormLabel>{m.orgs_form_slug()}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="acme-corporation"
+                      placeholder={m.orgs_form_slugPlaceholder()}
                       {...field}
                       onBlur={() => checkSlugAvailability(field.value)}
                       disabled={isCheckingSlug}
@@ -181,7 +182,7 @@ export function CreateOrganizationDialog({
                   </FormControl>
                   <FormMessage />
                   {isCheckingSlug && (
-                    <p className="text-sm text-muted-foreground">Checking availability...</p>
+                    <p className="text-sm text-muted-foreground">{m.orgs_form_checkingAvailability()}</p>
                   )}
                 </FormItem>
               )}
@@ -191,25 +192,9 @@ export function CreateOrganizationDialog({
               name="logo"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Logo URL (Optional)</FormLabel>
+                  <FormLabel>{m.orgs_form_logo()}</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://example.com/logo.png" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="metadata"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Metadata (Optional JSON)</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder='{"key": "value"}'
-                      {...field}
-                    />
+                    <Input placeholder={m.orgs_form_logoPlaceholder()} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -223,16 +208,16 @@ export function CreateOrganizationDialog({
                 disabled={isSubmitting}
                 className="cursor-pointer"
               >
-                Cancel
+                {m.orgs_form_buttonCancel()}
               </Button>
               <Button type="submit" disabled={isSubmitting || isCheckingSlug} className="cursor-pointer">
                 {isSubmitting ? (
                   <>
                     <LoadingSpinner className="mr-2 size-4" />
-                    Creating...
+                    {m.orgs_form_buttonCreating()}
                   </>
                 ) : (
-                  "Create"
+                  m.orgs_form_buttonCreate()
                 )}
               </Button>
             </DialogFooter>

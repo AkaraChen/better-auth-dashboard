@@ -1,6 +1,7 @@
 "use client"
 
 import React from 'react'
+import * as m from "@/paraglide/messages"
 import { Layout, Palette, Dices, Upload, ExternalLink, Sun, Moon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -105,12 +106,12 @@ export function AppearanceThemeCustomizer() {
         <div className="space-y-6">
           <div className="flex items-center gap-2 pb-2 border-b">
             <Palette className="h-5 w-5 text-primary" />
-            <h3 className="text-lg font-medium">Theme</h3>
+            <h3 className="text-lg font-medium">{m.settings_theme_section()}</h3>
           </div>
 
           {/* Mode */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Mode</Label>
+            <Label className="text-sm font-medium">{m.settings_mode_label()}</Label>
             <div className="grid grid-cols-2 gap-2">
               <Button
                 variant={!isDarkMode ? "secondary" : "outline"}
@@ -119,7 +120,7 @@ export function AppearanceThemeCustomizer() {
                 className="cursor-pointer mode-toggle-button relative overflow-hidden"
               >
                 <Sun className="h-4 w-4 mr-1 transition-transform duration-300" />
-                Light
+                {m.settings_theme_light()}
               </Button>
               <Button
                 variant={isDarkMode ? "secondary" : "outline"}
@@ -128,7 +129,7 @@ export function AppearanceThemeCustomizer() {
                 className="cursor-pointer mode-toggle-button relative overflow-hidden"
               >
                 <Moon className="h-4 w-4 mr-1 transition-transform duration-300" />
-                Dark
+                {m.settings_theme_dark()}
               </Button>
             </div>
           </div>
@@ -138,10 +139,10 @@ export function AppearanceThemeCustomizer() {
           {/* Shadcn UI Theme Presets */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-sm font-medium">Shadcn UI Theme Presets</Label>
+              <Label className="text-sm font-medium">{m.settings_shadcnPresets_label()}</Label>
               <Button variant="outline" size="sm" onClick={handleRandomShadcn} className="cursor-pointer">
                 <Dices className="h-3.5 w-3.5 mr-1.5" />
-                Random
+                {m.settings_random_button()}
               </Button>
             </div>
 
@@ -153,7 +154,7 @@ export function AppearanceThemeCustomizer() {
               applyTheme(value, isDarkMode)
             }}>
               <SelectTrigger className="w-full cursor-pointer">
-                <SelectValue placeholder="Choose Shadcn Theme" />
+                <SelectValue placeholder={m.settings_chooseShadcn_placeholder()} />
               </SelectTrigger>
               <SelectContent className="max-h-60">
                 <div className="p-2">
@@ -192,10 +193,10 @@ export function AppearanceThemeCustomizer() {
           {/* Tweakcn Theme Presets */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-sm font-medium">Tweakcn Theme Presets</Label>
+              <Label className="text-sm font-medium">{m.settings_tweakcnPresets_label()}</Label>
               <Button variant="outline" size="sm" onClick={handleRandomTweakcn} className="cursor-pointer">
                 <Dices className="h-3.5 w-3.5 mr-1.5" />
-                Random
+                {m.settings_random_button()}
               </Button>
             </div>
 
@@ -210,7 +211,7 @@ export function AppearanceThemeCustomizer() {
               }
             }}>
               <SelectTrigger className="w-full cursor-pointer">
-                <SelectValue placeholder="Choose Tweakcn Theme" />
+                <SelectValue placeholder={m.settings_chooseTweakcn_placeholder()} />
               </SelectTrigger>
               <SelectContent className="max-h-60">
                 <div className="p-2">
@@ -248,7 +249,7 @@ export function AppearanceThemeCustomizer() {
 
           {/* Radius Selection */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Radius</Label>
+            <Label className="text-sm font-medium">{m.settings_radius_label()}</Label>
             <div className="grid grid-cols-5 gap-2">
               {radiusOptions.map((option) => (
                 <div
@@ -278,14 +279,14 @@ export function AppearanceThemeCustomizer() {
             className="w-full cursor-pointer"
           >
             <Upload className="h-3.5 w-3.5 mr-1.5" />
-            Import Theme
+            {m.settings_importTheme_button()}
           </Button>
 
           {/* Brand Colors Section */}
           <Accordion type="single" collapsible className="w-full border-b rounded-lg">
             <AccordionItem value="brand-colors" className="border border-border rounded-lg overflow-hidden">
               <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/50 transition-colors">
-                <Label className="text-sm font-medium cursor-pointer">Brand Colors</Label>
+                <Label className="text-sm font-medium cursor-pointer">{m.settings_brandColors_label()}</Label>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 pt-2 space-y-3 border-t border-border bg-muted/20">
                 {baseColors.map((color) => (
@@ -306,17 +307,17 @@ export function AppearanceThemeCustomizer() {
           <div className="p-4 bg-muted rounded-lg space-y-3">
             <div className="flex items-center gap-2">
               <Palette className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Advanced Customization</span>
+              <span className="text-sm font-medium">{m.settings_advancedCustomization_label()}</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              For advanced theme customization with real-time preview, visual color picker, and hundreds of prebuilt themes, visit{" "}
+              {m.settings_advancedCustomization_description()}{" "}
               <a
                 href="https://tweakcn.com/editor/theme"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline font-medium cursor-pointer"
               >
-                tweakcn.com
+                {m.settings_tweakcn_link()}
               </a>
             </p>
             <Button
@@ -326,7 +327,7 @@ export function AppearanceThemeCustomizer() {
               onClick={() => window.open('https://tweakcn.com/editor/theme', '_blank')}
             >
               <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
-              Open Tweakcn
+              {m.settings_openTweakcn_button()}
             </Button>
           </div>
         </div>
@@ -335,17 +336,17 @@ export function AppearanceThemeCustomizer() {
         <div className="space-y-6">
           <div className="flex items-center gap-2 pb-2 border-b">
             <Layout className="h-5 w-5 text-primary" />
-            <h3 className="text-lg font-medium">Layout</h3>
+            <h3 className="text-lg font-medium">{m.settings_layout_section()}</h3>
           </div>
 
           {/* Sidebar Variant */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Sidebar Variant</Label>
+            <Label className="text-sm font-medium">{m.settings_sidebarVariant_label()}</Label>
             {sidebarConfig.variant && (
               <p className="text-xs text-muted-foreground mt-1">
-                {sidebarConfig.variant === "sidebar" && "Default: Standard sidebar layout"}
-                {sidebarConfig.variant === "floating" && "Floating: Floating sidebar with border"}
-                {sidebarConfig.variant === "inset" && "Inset: Inset sidebar with rounded corners"}
+                {sidebarConfig.variant === "sidebar" && m.settings_sidebarVariant_default()}
+                {sidebarConfig.variant === "floating" && m.settings_sidebarVariant_floating()}
+                {sidebarConfig.variant === "inset" && m.settings_sidebarVariant_inset()}
               </p>
             )}
             <div className="grid grid-cols-3 gap-3">
@@ -387,12 +388,12 @@ export function AppearanceThemeCustomizer() {
 
           {/* Sidebar Collapsible Mode */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Sidebar Collapsible Mode</Label>
+            <Label className="text-sm font-medium">{m.settings_sidebarCollapsible_label()}</Label>
             {sidebarConfig.collapsible && (
               <p className="text-xs text-muted-foreground mt-1">
-                {sidebarConfig.collapsible === "offcanvas" && "Off Canvas: Slides out of view"}
-                {sidebarConfig.collapsible === "icon" && "Icon: Collapses to icon only"}
-                {sidebarConfig.collapsible === "none" && "None: Always visible"}
+                {sidebarConfig.collapsible === "offcanvas" && m.settings_sidebarCollapsible_offcanvas()}
+                {sidebarConfig.collapsible === "icon" && m.settings_sidebarCollapsible_icon()}
+                {sidebarConfig.collapsible === "none" && m.settings_sidebarCollapsible_none()}
               </p>
             )}
             <div className="grid grid-cols-3 gap-3">
@@ -448,11 +449,11 @@ export function AppearanceThemeCustomizer() {
 
           {/* Sidebar Side */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Sidebar Position</Label>
+            <Label className="text-sm font-medium">{m.settings_sidebarPosition_label()}</Label>
             {sidebarConfig.side && (
               <p className="text-xs text-muted-foreground mt-1">
-                {sidebarConfig.side === "left" && "Left: Sidebar positioned on the left side"}
-                {sidebarConfig.side === "right" && "Right: Sidebar positioned on the right side"}
+                {sidebarConfig.side === "left" && m.settings_sidebarPosition_left()}
+                {sidebarConfig.side === "right" && m.settings_sidebarPosition_right()}
               </p>
             )}
             <div className="grid grid-cols-2 gap-3">

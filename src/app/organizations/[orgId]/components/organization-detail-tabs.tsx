@@ -12,6 +12,7 @@ import { OrganizationOverviewTab } from "./tabs/organization-overview-tab"
 import { OrganizationMembersTab } from "./tabs/organization-members-tab"
 import { OrganizationInvitationsTab } from "./tabs/organization-invitations-tab"
 import { OrganizationRolesTab } from "./tabs/organization-roles-tab"
+import * as m from "@/paraglide/messages"
 
 interface OrganizationDetailTabsProps {
   organization: FullOrganization
@@ -29,19 +30,19 @@ export function OrganizationDetailTabs({
       <TabsList className="grid w-full grid-cols-4 lg:w-auto">
         <TabsTrigger value="overview">
           <Building2 className="mr-2 h-4 w-4" />
-          Overview
+          {m.orgs_detail_overview()}
         </TabsTrigger>
         <TabsTrigger value="members">
           <Users className="mr-2 h-4 w-4" />
-          Members ({organization.members.length})
+          {m.orgs_detail_members({ count: organization.members.length })}
         </TabsTrigger>
         <TabsTrigger value="invitations">
           <Mail className="mr-2 h-4 w-4" />
-          Invitations ({pendingInvitationsCount})
+          {m.orgs_detail_invitations({ count: pendingInvitationsCount })}
         </TabsTrigger>
         <TabsTrigger value="roles">
           <Shield className="mr-2 h-4 w-4" />
-          Roles
+          {m.orgs_detail_roles()}
         </TabsTrigger>
       </TabsList>
 

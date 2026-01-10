@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card"
 import { EditOrganizationDialog } from "../../components/edit-organization-dialog"
 import type { FullOrganization } from "../../types"
+import * as m from "@/paraglide/messages"
 
 interface OrganizationDetailHeaderProps {
   organization: FullOrganization
@@ -39,7 +40,7 @@ export function OrganizationDetailHeader({
           <Link to="/organizations">
             <Button variant="ghost" size="sm" className="cursor-pointer">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
+              {m.orgs_detail_back()}
             </Button>
           </Link>
           <div className="flex items-start justify-between">
@@ -62,7 +63,7 @@ export function OrganizationDetailHeader({
               </Button>
               <Button onClick={() => setEditDialogOpen(true)} className="cursor-pointer">
                 <Edit className="mr-2 h-4 w-4" />
-                Edit
+                {m.orgs_detail_edit()}
               </Button>
             </div>
           </div>
@@ -72,21 +73,21 @@ export function OrganizationDetailHeader({
         <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
             <Building2 className="h-4 w-4 text-muted-foreground" />
-            <span className="text-muted-foreground">ID:</span>
+            <span className="text-muted-foreground">{m.orgs_detail_id()}</span>
             <code className="text-xs">{organization.id}</code>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Members:</span>
+            <span className="text-muted-foreground">{m.orgs_detail_members()}:</span>
             <Badge variant="secondary">{organization.members.length}</Badge>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Invitations:</span>
+            <span className="text-muted-foreground">{m.orgs_detail_invitations()}:</span>
             <Badge variant="secondary">
               {organization.invitations.filter((i: { status: string }) => i.status === "pending").length}
             </Badge>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Created:</span>
+            <span className="text-muted-foreground">{m.orgs_detail_createdAt()}:</span>
             <span>{formatDate(organization.createdAt)}</span>
           </div>
         </div>

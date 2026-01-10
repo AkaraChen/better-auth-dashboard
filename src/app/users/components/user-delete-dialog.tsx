@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import * as m from "@/paraglide/messages"
 import { AlertTriangle } from "lucide-react"
 import { toast } from "sonner"
 
@@ -42,10 +43,10 @@ export function UserDeleteDialog({
     try {
       setIsDeleting(true)
       await onConfirm(user.id)
-      toast.success("User deleted successfully")
+      toast.success(m.users_toast_deleted())
       onOpenChange(false)
     } catch (error) {
-      toast.error("Failed to delete user")
+      toast.error(m.users_error_deleteFailed())
       console.error(error)
     } finally {
       setIsDeleting(false)
@@ -69,12 +70,12 @@ export function UserDeleteDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="size-5 text-destructive" />
-            {isDeletingSelf ? "Delete Your Account" : "Delete User"}
+            {isDeletingSelf ? m.users_dialog_delete_title() : m.users_dialog_delete_title()}
           </DialogTitle>
           <DialogDescription>
             {isDeletingSelf
-              ? "Warning: You are about to delete your own account. This action cannot be undone and you will be logged out immediately."
-              : "Are you sure you want to delete this user? This action cannot be undone."}
+              ? m.users_dialog_delete_ownAccount()
+              : m.users_dialog_delete_description()}
           </DialogDescription>
         </DialogHeader>
 
@@ -91,7 +92,7 @@ export function UserDeleteDialog({
               )}
             </Avatar>
             <div className="flex flex-col">
-              <span className="font-medium">{user.name || "Unnamed User"}</span>
+              <span className="font-medium">{user.name || m.users_table_unnamedUser()}</span>
               <span className="text-sm text-muted-foreground">{user.email}</span>
             </div>
           </div>
@@ -104,7 +105,7 @@ export function UserDeleteDialog({
             disabled={isDeleting}
             className="cursor-pointer"
           >
-            Cancel
+            {m.users_form_buttonCancel()}
           </Button>
           <Button
             variant="destructive"
@@ -115,10 +116,10 @@ export function UserDeleteDialog({
             {isDeleting ? (
               <>
                 <LoadingSpinner className="mr-2 size-4" />
-                Deleting...
+                {m.users_form_buttonDeleting()}
               </>
             ) : (
-              "Delete User"
+              m.users_form_buttonDelete()
             )}
           </Button>
         </DialogFooter>

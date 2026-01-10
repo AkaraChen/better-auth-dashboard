@@ -29,12 +29,13 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { authClient } from "@/lib/auth-client"
 import { generateSlug } from "@/lib/slug"
 import type { FullOrganization } from "../types"
+import * as m from "@/paraglide/messages"
 
 const editOrganizationFormSchema = z.object({
-  name: z.string().min(1, { message: "Organization name is required" }),
-  slug: z.string().min(1, { message: "Slug is required" })
-    .regex(/^[a-z0-9-]+$/, { message: "Slug must contain only lowercase letters, numbers, and hyphens" }),
-  logo: z.string().url({ message: "Must be a valid URL" }).optional().or(z.literal("")),
+  name: z.string().min(1, { message: m.orgs_validation_nameRequired() }),
+  slug: z.string().min(1, { message: m.orgs_validation_slugRequired() })
+    .regex(/^[a-z0-9-]+$/, { message: m.orgs_validation_slugInvalid() }),
+  logo: z.string().url({ message: m.orgs_validation_logoInvalid() }).optional().or(z.literal("")),
   metadata: z.string().optional(),
 })
 
@@ -90,7 +91,7 @@ export function EditOrganizationDialog({
         try {
           metadata = JSON.parse(values.metadata)
         } catch {
-          throw new Error("Invalid JSON format for metadata")
+          throw new Error(m.orgs_validation_metadataInvalid())
         }
       }
 
@@ -105,17 +106,17 @@ export function EditOrganizationDialog({
       })
 
       if (result.error) {
-        throw new Error(result.error.message || "Failed to update organization")
+        throw new Error(result.error.message || m.orgs_error_updateFailed())
       }
 
-      toast.success("Organization updated successfully")
+      toast.success(m.orgs_toast_updated())
       setOpen(false)
       form.reset()
 
       // Invalidate and refetch organizations
       queryClient.invalidateQueries({ queryKey: ["organizations"] })
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to update organization")
+      toast.error(error instanceof Error ? error.message : m.orgs_error_updateFailed())
       console.error(error)
     } finally {
       setIsSubmitting(false)
@@ -135,9 +136,9 @@ export function EditOrganizationDialog({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Organization</DialogTitle>
+          <DialogTitle>{m.orgs_dialog_edit_title()}</DialogTitle>
           <DialogDescription>
-            Update organization information. Click save when you're done.
+            {m.orgs_dialog_edit_description()}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -147,10 +148,10 @@ export function EditOrganizationDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Organization Name</FormLabel>
+                  <FormLabel>{m.orgs_form_name()}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Acme Corporation"
+                      placeholder={m.orgs_form_namePlaceholder()}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e)
@@ -169,9 +170,9 @@ export function EditOrganizationDialog({
               name="slug"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Slug</FormLabel>
+                  <FormLabel>{m.orgs_form_slug()}</FormLabel>
                   <FormControl>
-                    <Input placeholder="acme-corporation" {...field} />
+                    <Input placeholder={m.orgs_form_slugPlaceholder()} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -182,25 +183,9 @@ export function EditOrganizationDialog({
               name="logo"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Logo URL (Optional)</FormLabel>
+                  <FormLabel>{m.orgs_form_logo()}</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://example.com/logo.png" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="metadata"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Metadata (Optional JSON)</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder='{"key": "value"}'
-                      {...field}
-                    />
+                    <Input placeholder={m.orgs_form_logoPlaceholder()} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -214,16 +199,16 @@ export function EditOrganizationDialog({
                 disabled={isSubmitting}
                 className="cursor-pointer"
               >
-                Cancel
+                {m.orgs_form_buttonCancel()}
               </Button>
               <Button type="submit" disabled={isSubmitting} className="cursor-pointer">
                 {isSubmitting ? (
                   <>
                     <LoadingSpinner className="mr-2 size-4" />
-                    Saving...
+                    {m.orgs_form_buttonSaving()}
                   </>
                 ) : (
-                  "Save"
+                  m.orgs_form_buttonSave()
                 )}
               </Button>
             </DialogFooter>

@@ -14,6 +14,7 @@ import {
   XCircle,
 } from "lucide-react"
 import type { FullOrganization } from "../../../types"
+import * as m from "@/paraglide/messages"
 
 interface OrganizationInvitationsTabProps {
   organization: FullOrganization
@@ -75,13 +76,13 @@ export function OrganizationInvitationsTab({
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Mail className="h-5 w-5" />
-            Pending Invitations ({pendingInvitations.length})
+            {m.orgs_invitations_pendingTitle({ count: pendingInvitations.length })}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {pendingInvitations.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">
-              No pending invitations
+              {m.orgs_detail_noPendingInvitations()}
             </p>
           ) : (
             <div className="space-y-3">
@@ -101,7 +102,7 @@ export function OrganizationInvitationsTab({
                       <div>
                         <p className="font-medium">{invitation.email}</p>
                         <p className="text-sm text-muted-foreground">
-                          Role: {invitation.role}
+                          {m.orgs_detail_role()} {invitation.role}
                         </p>
                       </div>
                     </div>
@@ -114,7 +115,7 @@ export function OrganizationInvitationsTab({
                         {invitation.status}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
-                        Sent {formatDateTime(invitation.createdAt)}
+                        {m.orgs_detail_sent({ date: formatDateTime(invitation.createdAt) })}
                       </span>
                     </div>
                   </div>
@@ -131,7 +132,7 @@ export function OrganizationInvitationsTab({
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Mail className="h-5 w-5" />
-              Other Invitations ({otherInvitations.length})
+              {m.orgs_invitations_otherTitle({ count: otherInvitations.length })}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -152,7 +153,7 @@ export function OrganizationInvitationsTab({
                       <div>
                         <p className="font-medium">{invitation.email}</p>
                         <p className="text-sm text-muted-foreground">
-                          Role: {invitation.role}
+                          {m.orgs_detail_role()} {invitation.role}
                         </p>
                       </div>
                     </div>

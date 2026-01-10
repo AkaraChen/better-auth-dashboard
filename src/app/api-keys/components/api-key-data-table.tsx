@@ -25,6 +25,7 @@ import {
   Trash2,
 } from "lucide-react"
 import { toast } from "sonner"
+import * as m from "@/paraglide/messages"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -82,7 +83,7 @@ export function ApiKeyDataTable({
   const [globalFilter, setGlobalFilter] = useState("")
 
   const formatDate = (date: Date | string | null) => {
-    if (!date) return "Never"
+    if (!date) return m.apiKeys_never()
     return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -113,13 +114,13 @@ export function ApiKeyDataTable({
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
-    toast.success("Copied to clipboard")
+    toast.success(m.apiKeys_toast_copied())
   }
 
   const columns: ColumnDef<ApiKey>[] = [
     {
       accessorKey: "name",
-      header: "Name",
+      header: m.apiKeys_table_name(),
       cell: ({ row }) => {
         const apiKey = row.original
         return (
@@ -132,7 +133,7 @@ export function ApiKeyDataTable({
     },
     {
       accessorKey: "enabled",
-      header: "Status",
+      header: m.apiKeys_table_status(),
       cell: ({ row }) => {
         const apiKey = row.original
         const expired = isExpired(apiKey.expiresAt)
@@ -142,7 +143,7 @@ export function ApiKeyDataTable({
             ? "text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-900/20"
             : "text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-900/20"
 
-        const statusText = expired ? "Expired" : apiKey.enabled ? "Active" : "Disabled"
+        const statusText = expired ? m.apiKeys_status_expired() : apiKey.enabled ? m.apiKeys_status_active() : m.apiKeys_status_disabled()
 
         return (
           <Badge variant="secondary" className={statusColor}>
@@ -153,7 +154,7 @@ export function ApiKeyDataTable({
     },
     {
       accessorKey: "expiresAt",
-      header: "Expires",
+      header: m.apiKeys_table_expires(),
       cell: ({ row }) => {
         const apiKey = row.original
         const timeRemaining = getTimeRemaining(apiKey.expiresAt)
@@ -169,7 +170,7 @@ export function ApiKeyDataTable({
     },
     {
       accessorKey: "lastUsedAt",
-      header: "Last Used",
+      header: m.apiKeys_table_lastUsed(),
       cell: ({ row }) => {
         const apiKey = row.original
         return <span className="text-sm">{formatDate(apiKey.lastUsedAt)}</span>
@@ -177,7 +178,7 @@ export function ApiKeyDataTable({
     },
     {
       accessorKey: "createdAt",
-      header: "Created",
+      header: m.apiKeys_table_created(),
       cell: ({ row }) => {
         const apiKey = row.original
         return <span className="text-sm">{formatDate(apiKey.createdAt)}</span>
@@ -185,7 +186,7 @@ export function ApiKeyDataTable({
     },
     {
       id: "actions",
-      header: "Actions",
+      header: m.apiKeys_table_actions(),
       cell: ({ row }) => {
         const apiKey = row.original
         const expired = isExpired(apiKey.expiresAt)
@@ -276,7 +277,7 @@ export function ApiKeyDataTable({
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search API keys..."
+              placeholder={m.apiKeys_table_search()}
               value={globalFilter ?? ""}
               onChange={(event) => setGlobalFilter(String(event.target.value))}
               className="pl-9"
@@ -292,7 +293,7 @@ export function ApiKeyDataTable({
               className="cursor-pointer"
             >
               <Plus className="mr-2 size-4" />
-              Add API Key
+              {m.apiKeys_table_addKey()}
             </Button>
           )}
           <Button
@@ -302,7 +303,7 @@ export function ApiKeyDataTable({
             className="cursor-pointer"
           >
             <RefreshCw className={`mr-2 size-4 ${loading ? "animate-spin" : ""}`} />
-            Refresh
+            {m.apiKeys_table_refresh()}
           </Button>
         </div>
       </div>
@@ -311,12 +312,12 @@ export function ApiKeyDataTable({
       <div className="grid gap-2 sm:grid-cols-1 sm:gap-4">
         <div className="space-y-2">
           <Label htmlFor="column-visibility" className="text-sm font-medium">
-            Column Visibility
+            {m.apiKeys_table_columnVisibility()}
           </Label>
           <DropdownMenu>
             <DropdownMenuTrigger asChild id="column-visibility">
               <Button variant="outline" className="cursor-pointer w-full sm:w-auto">
-                Columns <ChevronDown className="ml-2 size-4" />
+                {m.apiKeys_table_columns()} <ChevronDown className="ml-2 size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -371,7 +372,7 @@ export function ApiKeyDataTable({
                 <TableCell colSpan={columns.length} className="h-24 text-center">
                   <div className="flex items-center justify-center">
                     <RefreshCw className="mr-2 size-4 animate-spin" />
-                    Loading API keys...
+                    {m.apiKeys_table_loading()}
                   </div>
                 </TableCell>
               </TableRow>
@@ -388,7 +389,7 @@ export function ApiKeyDataTable({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No API keys found.
+                  {m.apiKeys_table_noResults()}
                 </TableCell>
               </TableRow>
             )}
@@ -400,7 +401,7 @@ export function ApiKeyDataTable({
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex items-center space-x-2">
           <Label htmlFor="page-size" className="text-sm font-medium">
-            Show
+            {m.apiKeys_table_show()}
           </Label>
           <Select
             value={`${table.getState().pagination.pageSize}`}
@@ -422,14 +423,14 @@ export function ApiKeyDataTable({
           </Select>
         </div>
         <div className="flex-1 text-sm text-muted-foreground hidden sm:block">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredSelectedRowModel().rows.length} {m.apiKeys_table_of()}{" "}
+          {table.getFilteredRowModel().rows.length} {m.apiKeys_table_rowSelected()}
         </div>
         <div className="flex items-center space-x-6 lg:space-x-8">
           <div className="flex items-center space-x-2 hidden sm:flex">
-            <p className="text-sm font-medium">Page</p>
+            <p className="text-sm font-medium">{m.apiKeys_table_page()}</p>
             <strong className="text-sm">
-              {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+              {table.getState().pagination.pageIndex + 1} {m.apiKeys_table_of()} {table.getPageCount()}
             </strong>
           </div>
           <div className="flex items-center space-x-2">
@@ -440,7 +441,7 @@ export function ApiKeyDataTable({
               disabled={!table.getCanPreviousPage() || loading}
               className="cursor-pointer"
             >
-              Previous
+              {m.apiKeys_table_previous()}
             </Button>
             <Button
               variant="outline"
@@ -449,7 +450,7 @@ export function ApiKeyDataTable({
               disabled={!table.getCanNextPage() || loading}
               className="cursor-pointer"
             >
-              Next
+              {m.apiKeys_table_next()}
             </Button>
           </div>
         </div>

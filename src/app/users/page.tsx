@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import * as m from "@/paraglide/messages"
 import { BaseLayout } from "@/components/layouts/base-layout"
 import { AdminDataTable } from "./components/admin-data-table"
 import { CreateUserDialog, type CreateUserFormValues } from "./components/create-user-dialog"
@@ -73,13 +74,13 @@ export default function AdminUsersPage() {
       })
 
       if (response.error) {
-        setError(response.error.message || "Failed to fetch users")
+        setError(response.error.message || m.users_error_fetchFailed())
       } else if (response.data) {
         setUsers(response.data.users as BetterAuthUser[] || [])
         setTotalCount(response.data.total || 0)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch users")
+      setError(err instanceof Error ? err.message : m.users_error_fetchFailed())
     } finally {
       setLoading(false)
     }
@@ -103,7 +104,7 @@ export default function AdminUsersPage() {
       })
 
       if (result.error) {
-        throw new Error(result.error.message || "Failed to create user")
+        throw new Error(result.error.message || m.users_error_createFailed())
       }
 
       await fetchUsers()
@@ -126,7 +127,7 @@ export default function AdminUsersPage() {
       })
 
       if (result.error) {
-        throw new Error(result.error.message || "Failed to update user")
+        throw new Error(result.error.message || m.users_error_updateFailed())
       }
 
       await fetchUsers()
@@ -141,7 +142,7 @@ export default function AdminUsersPage() {
       const result = await authClient.admin.removeUser({ userId })
 
       if (result.error) {
-        throw new Error(result.error.message || "Failed to delete user")
+        throw new Error(result.error.message || m.users_error_deleteFailed())
       }
 
       await fetchUsers()
@@ -154,16 +155,16 @@ export default function AdminUsersPage() {
   const handleBanUser = (userId: string) => {
     setUserToDelete(users.find(u => u.id === userId) || null)
     // We'll use a separate dialog for ban confirmation
-    const reason = prompt("Enter ban reason (optional):")
+    const reason = prompt(m.users_ban_prompt())
     if (reason !== null) {
       authClient.admin.banUser({
         userId,
         banReason: reason || undefined
       }).then(async (result) => {
         if (result.error) {
-          toast.error(result.error.message || "Failed to ban user")
+          toast.error(result.error.message || m.users_error_banFailed())
         } else {
-          toast.success("User banned successfully")
+          toast.success(m.users_toast_banned())
           await fetchUsers()
         }
       })
@@ -176,13 +177,13 @@ export default function AdminUsersPage() {
       const result = await authClient.admin.unbanUser({ userId })
 
       if (result.error) {
-        toast.error(result.error.message || "Failed to unban user")
+        toast.error(result.error.message || m.users_error_unbanFailed())
       } else {
-        toast.success("User unbanned successfully")
+        toast.success(m.users_toast_unbanned())
         await fetchUsers()
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to unban user")
+      toast.error(err instanceof Error ? err.message : m.users_error_unbanFailed())
     }
   }
 
@@ -234,7 +235,7 @@ export default function AdminUsersPage() {
       })
 
       if (result.error) {
-        throw new Error(result.error.message || "Failed to set password")
+        throw new Error(result.error.message || m.users_error_updateFailed())
       }
     } catch (err) {
       throw err
@@ -243,8 +244,8 @@ export default function AdminUsersPage() {
 
   return (
     <BaseLayout
-      title="Users"
-      description="Manage users from the better-auth system"
+      title={m.users_title()}
+      description={m.users_description()}
     >
       <div className="@container/main px-4 lg:px-6">
         <AdminDataTable

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import * as m from "@/paraglide/messages"
 import { Plus } from "lucide-react"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
@@ -30,9 +31,9 @@ import { Switch } from "@/components/ui/switch"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 
 const createUserFormSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
-  name: z.string().min(1, { message: "Name is required" }),
+  email: z.string().email({ message: m.users_validation_invalidEmail() }),
+  password: z.string().min(8, { message: m.users_validation_passwordMin() }),
+  name: z.string().min(1, { message: m.users_validation_nameRequired() }),
   role: z.enum(["user", "admin"]).default("user"),
   emailVerified: z.boolean().default(false),
 })
@@ -71,11 +72,11 @@ export function CreateUserDialog({
     try {
       setIsSubmitting(true)
       await onSubmit(values)
-      toast.success("User created successfully")
+      toast.success(m.users_toast_created())
       setOpen(false)
       form.reset()
     } catch (error) {
-      toast.error("Failed to create user")
+      toast.error(m.users_error_createFailed())
       console.error(error)
     } finally {
       setIsSubmitting(false)
@@ -96,14 +97,14 @@ export function CreateUserDialog({
       <DialogTrigger asChild>
         <Button className="cursor-pointer">
           <Plus className="mr-2 size-4" />
-          Add User
+          {m.users_table_addUser()}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New User</DialogTitle>
+          <DialogTitle>{m.users_dialog_create_title()}</DialogTitle>
           <DialogDescription>
-            Fill in the form to create a new user. Click save when you're done.
+            {m.users_dialog_create_description()}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -113,9 +114,9 @@ export function CreateUserDialog({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{m.users_form_email()}</FormLabel>
                   <FormControl>
-                    <Input placeholder="user@example.com" {...field} />
+                    <Input placeholder={m.users_form_emailPlaceholder()} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -126,9 +127,9 @@ export function CreateUserDialog({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{m.users_form_password()}</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input type="password" placeholder={m.users_form_passwordPlaceholder()} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -139,9 +140,9 @@ export function CreateUserDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{m.users_form_name()}</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input placeholder={m.users_form_namePlaceholder()} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -152,9 +153,9 @@ export function CreateUserDialog({
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
+                  <FormLabel>{m.users_form_role()}</FormLabel>
                   <FormControl>
-                    <Input placeholder="user" {...field} />
+                    <Input placeholder={m.users_form_rolePlaceholder()} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -166,7 +167,7 @@ export function CreateUserDialog({
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                   <div className="space-y-0.5">
-                    <FormLabel>Email Verified</FormLabel>
+                    <FormLabel>{m.users_form_emailVerified()}</FormLabel>
                   </div>
                   <FormControl>
                     <Switch
@@ -186,16 +187,16 @@ export function CreateUserDialog({
                 disabled={isSubmitting}
                 className="cursor-pointer"
               >
-                Cancel
+                {m.users_form_buttonCancel()}
               </Button>
               <Button type="submit" disabled={isSubmitting} className="cursor-pointer">
                 {isSubmitting ? (
                   <>
                     <LoadingSpinner className="mr-2 size-4" />
-                    Saving...
+                    {m.users_form_buttonSaving()}
                   </>
                 ) : (
-                  "Save"
+                  m.users_form_buttonSave()
                 )}
               </Button>
             </DialogFooter>

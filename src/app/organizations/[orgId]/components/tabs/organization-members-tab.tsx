@@ -28,6 +28,7 @@ import { authClient } from "@/lib/auth-client"
 import type { FullOrganization } from "../../../types"
 import { InviteMemberDialog } from "../invite-member-dialog"
 import { UpdateMemberRoleDialog } from "../update-member-role-dialog"
+import * as m from "@/paraglide/messages"
 
 interface OrganizationMembersTabProps {
   organization: FullOrganization
@@ -56,7 +57,7 @@ export function OrganizationMembersTab({
       return response.data
     },
     onSuccess: () => {
-      toast.success("Member removed successfully")
+      toast.success(m.orgs_overview_removedSuccess())
       queryClient.invalidateQueries({
         queryKey: ["organizations", organization.id, "full"],
       })
@@ -92,21 +93,21 @@ export function OrganizationMembersTab({
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
               <Users className="h-5 w-5" />
-              Members ({organization.members.length})
+              {m.orgs_overview_members_title({ count: organization.members.length })}
             </CardTitle>
             <Button
               onClick={() => setInviteDialogOpen(true)}
               className="cursor-pointer"
             >
               <UserPlus className="mr-2 h-4 w-4" />
-              Invite Member
+              {m.orgs_overview_inviteMember()}
             </Button>
           </div>
         </CardHeader>
         <CardContent>
           {organization.members.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">
-              No members yet
+              {m.orgs_detail_noMembers()}
             </p>
           ) : (
             <div className="space-y-3">
@@ -125,7 +126,7 @@ export function OrganizationMembersTab({
                     )}
                     <div>
                       <p className="font-medium">
-                        {member.user.name || "Unnamed User"}
+                        {member.user.name || m.orgs_detail_unnamedUser()}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {member.user.email}
@@ -140,7 +141,7 @@ export function OrganizationMembersTab({
                       {member.role}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
-                      Joined {formatDate(member.createdAt)}
+                      {m.orgs_detail_joined({ date: formatDate(member.createdAt) })}
                     </span>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -156,7 +157,7 @@ export function OrganizationMembersTab({
                           className="cursor-pointer"
                         >
                           <Shield className="mr-2 h-4 w-4" />
-                          Change Role
+                          {m.orgs_overview_changeRole()}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           variant="destructive"
@@ -167,7 +168,7 @@ export function OrganizationMembersTab({
                           className="cursor-pointer"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Remove Member
+                          {m.orgs_overview_removeMember()}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

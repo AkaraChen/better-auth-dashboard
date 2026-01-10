@@ -1,4 +1,5 @@
 import { Users, Building2, Key, MailCheck } from "lucide-react"
+import * as m from "@/paraglide/messages"
 import {
   Card,
   CardDescription,
@@ -61,9 +62,9 @@ export function SectionCards() {
       {hasFeature("admin") && (
         <FeatureCard
           icon={Users}
-          title="Total Users"
+          title={m.dashboard_totalUsers()}
           value={totalUsers}
-          subtitle={`${adminUsers} admin users`}
+          subtitle={m.dashboard_adminUsers({ count: adminUsers })}
           isLoading={usersPending || sessionPending}
         />
       )}
@@ -71,9 +72,9 @@ export function SectionCards() {
       {hasFeature("organizations") && (
         <FeatureCard
           icon={Building2}
-          title="Organizations"
+          title={m.dashboard_organizations()}
           value={totalOrgs}
-          subtitle={`${totalMembers} total members`}
+          subtitle={m.dashboard_totalMembers({ count: totalMembers })}
           isLoading={orgsPending}
         />
       )}
@@ -81,9 +82,9 @@ export function SectionCards() {
       {hasFeature("api-key") && (
         <FeatureCard
           icon={Key}
-          title="Active API Keys"
+          title={m.dashboard_activeApiKeys()}
           value={activeApiKeys}
-          subtitle="Enabled and valid"
+          subtitle={m.dashboard_enabledAndValid()}
           isLoading={apiKeysPending}
         />
       )}
@@ -91,9 +92,9 @@ export function SectionCards() {
       {hasFeature("organizations") && (
         <FeatureCard
           icon={MailCheck}
-          title="Pending Invites"
+          title={m.dashboard_pendingInvites()}
           value={pendingInvites}
-          subtitle="Awaiting acceptance"
+          subtitle={m.dashboard_awaitingAcceptance()}
           isLoading={orgsPending}
         />
       )}

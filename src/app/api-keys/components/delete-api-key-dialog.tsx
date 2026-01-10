@@ -4,6 +4,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { AlertTriangle } from "lucide-react"
+import * as m from "@/paraglide/messages"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -50,7 +51,7 @@ export function DeleteApiKeyDialog({
         throw new Error(result.error.message || "Failed to delete API key")
       }
 
-      toast.success("API key deleted successfully")
+      toast.success(m.apiKeys_toast_deleted())
       setOpen(false)
 
       // Invalidate and refetch API keys
@@ -75,32 +76,32 @@ export function DeleteApiKeyDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">
             <AlertTriangle className="h-5 w-5" />
-            Delete API Key
+            {m.apiKeys_dialog_delete_title()}
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this API key? This action cannot be undone.
+            {m.apiKeys_dialog_delete_confirm()}
           </DialogDescription>
         </DialogHeader>
         {apiKey && (
           <div className="py-4">
             <div className="space-y-2 rounded-lg border border-destructive/20 bg-destructive/10 p-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Name:</span>
+                <span className="text-sm font-medium">{m.apiKeys_dialog_delete_nameLabel()}</span>
                 <span className="text-sm">{apiKey.name}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Key Prefix:</span>
+                <span className="text-sm font-medium">{m.apiKeys_dialog_delete_prefixLabel()}</span>
                 <span className="text-sm font-mono">{apiKey.startsWith}...</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Created:</span>
+                <span className="text-sm font-medium">{m.apiKeys_dialog_delete_createdLabel()}</span>
                 <span className="text-sm">
                   {new Date(apiKey.createdAt).toLocaleDateString()}
                 </span>
               </div>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              Any applications using this API key will immediately lose access.
+              {m.apiKeys_dialog_delete_warning()}
             </p>
           </div>
         )}
@@ -112,7 +113,7 @@ export function DeleteApiKeyDialog({
             disabled={isSubmitting}
             className="cursor-pointer"
           >
-            Cancel
+            {m.apiKeys_form_buttonCancel()}
           </Button>
           <Button
             type="button"
@@ -124,10 +125,10 @@ export function DeleteApiKeyDialog({
             {isSubmitting ? (
               <>
                 <LoadingSpinner className="mr-2 size-4" />
-                Deleting...
+                {m.apiKeys_form_buttonDeleting()}
               </>
             ) : (
-              "Delete API Key"
+              m.apiKeys_form_buttonDelete()
             )}
           </Button>
         </DialogFooter>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import * as m from "@/paraglide/messages"
 import { Key, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 import { useForm } from "react-hook-form"
@@ -33,11 +34,11 @@ const setPasswordFormSchema = z
   .object({
     newPassword: z
       .string()
-      .min(8, "Password must be at least 8 characters"),
+      .min(8, m.users_password_minLength()),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: m.users_password_noMatch(),
     path: ["confirmPassword"],
   })
 
@@ -72,7 +73,7 @@ export function SetPasswordDialog({
     try {
       setIsSubmitting(true)
       await onSubmit(user.id, values)
-      toast.success("Password updated successfully")
+      toast.success(m.users_password_success())
       form.reset()
       onOpenChange(false)
     } catch (error) {
@@ -100,10 +101,10 @@ export function SetPasswordDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Key className="size-5" />
-            Set Password
+            {m.users_dialog_password_title()}
           </DialogTitle>
           <DialogDescription>
-            Set a new password for {user?.name || user?.email}. The user will need to use this password to sign in.
+            {m.users_dialog_password_description({ name: user?.name || user?.email })}
           </DialogDescription>
         </DialogHeader>
 
@@ -120,7 +121,7 @@ export function SetPasswordDialog({
               )}
             </Avatar>
             <div className="flex flex-col">
-              <span className="font-medium">{user.name || "Unnamed User"}</span>
+              <span className="font-medium">{user.name || m.users_table_unnamedUser()}</span>
               <span className="text-sm text-muted-foreground">{user.email}</span>
             </div>
           </div>
@@ -133,11 +134,11 @@ export function SetPasswordDialog({
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel>{m.users_password_newPassword()}</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Enter new password"
+                      placeholder={m.users_password_newPasswordPlaceholder()}
                       autoComplete="new-password"
                       disabled={isSubmitting}
                       {...field}
@@ -152,11 +153,11 @@ export function SetPasswordDialog({
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel>{m.users_password_confirmPassword()}</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Confirm new password"
+                      placeholder={m.users_password_confirmPasswordPlaceholder()}
                       autoComplete="new-password"
                       disabled={isSubmitting}
                       {...field}
@@ -175,7 +176,7 @@ export function SetPasswordDialog({
                 disabled={isSubmitting}
                 className="cursor-pointer"
               >
-                Cancel
+                {m.users_password_close()}
               </Button>
               <Button
                 type="submit"
@@ -185,12 +186,12 @@ export function SetPasswordDialog({
                 {isSubmitting ? (
                   <>
                     <LoadingSpinner className="mr-2 size-4" />
-                    Setting Password...
+                    {m.users_password_setting()}
                   </>
                 ) : (
                   <>
                     <Key className="mr-2 size-4" />
-                    Set Password
+                    {m.users_password_set()}
                   </>
                 )}
               </Button>

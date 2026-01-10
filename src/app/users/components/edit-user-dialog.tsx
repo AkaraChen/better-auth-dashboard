@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import * as m from "@/paraglide/messages"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -32,9 +33,9 @@ import type { BetterAuthUser } from "../page"
 import config from "~/dashboard.config"
 
 const editUserFormSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
-  name: z.string().min(1, { message: "Name is required" }),
-  role: z.string().min(1, { message: "At least one role is required" }),
+  email: z.string().email({ message: m.users_validation_invalidEmail() }),
+  name: z.string().min(1, { message: m.users_validation_nameRequired() }),
+  role: z.string().min(1, { message: m.users_validation_roleRequired() }),
   emailVerified: z.boolean(),
 })
 
@@ -111,12 +112,12 @@ export function EditUserDialog({
         ...values,
         role: serializeRoles(roleArray),
       })
-      toast.success("User updated successfully")
+      toast.success(m.users_toast_updated())
       setOpen(false)
       form.reset()
       setRoleArray(['user'])
     } catch (error) {
-      toast.error("Failed to update user")
+      toast.error(m.users_error_updateFailed())
       console.error(error)
     } finally {
       setIsSubmitting(false)
@@ -161,12 +162,12 @@ export function EditUserDialog({
                 )}
               </Avatar>
               <div>
-                <DialogTitle>Edit User</DialogTitle>
+                <DialogTitle>{m.users_dialog_edit_title()}</DialogTitle>
               </div>
             </div>
           )}
           <DialogDescription>
-            Update user information. Click save when you're done.
+            {m.users_dialog_edit_description()}
           </DialogDescription>
         </DialogHeader>
 
@@ -177,9 +178,9 @@ export function EditUserDialog({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{m.users_form_email()}</FormLabel>
                   <FormControl>
-                    <Input placeholder="user@example.com" {...field} />
+                    <Input placeholder={m.users_form_emailPlaceholder()} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -190,9 +191,9 @@ export function EditUserDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{m.users_form_name()}</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input placeholder={m.users_form_namePlaceholder()} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -203,7 +204,7 @@ export function EditUserDialog({
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
+                  <FormLabel>{m.users_form_role()}</FormLabel>
                   <FormControl>
                     <MultiSelectCombobox
                       value={roleArray}
@@ -227,7 +228,7 @@ export function EditUserDialog({
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                   <div className="space-y-0.5">
-                    <FormLabel>Email Verified</FormLabel>
+                    <FormLabel>{m.users_form_emailVerified()}</FormLabel>
                   </div>
                   <FormControl>
                     <Switch
@@ -247,16 +248,16 @@ export function EditUserDialog({
                 disabled={isSubmitting}
                 className="cursor-pointer"
               >
-                Cancel
+                {m.users_form_buttonCancel()}
               </Button>
               <Button type="submit" disabled={isSubmitting} className="cursor-pointer">
                 {isSubmitting ? (
                   <>
                     <LoadingSpinner className="mr-2 size-4" />
-                    Saving...
+                    {m.users_form_buttonSaving()}
                   </>
                 ) : (
-                  "Save"
+                  m.users_form_buttonSave()
                 )}
               </Button>
             </DialogFooter>

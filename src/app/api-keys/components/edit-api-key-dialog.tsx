@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
+import * as m from "@/paraglide/messages"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -31,7 +32,7 @@ import { authClient } from "@/lib/auth-client"
 import type { ApiKey } from "../types"
 
 const editApiKeyFormSchema = z.object({
-  name: z.string().min(1, { message: "API key name is required" }),
+  name: z.string().min(1, { message: m.apiKeys_validation_nameRequired() }),
   enabled: z.boolean(),
   metadata: z.string().optional(),
 })
@@ -140,7 +141,7 @@ export function EditApiKeyDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>API Key Name</FormLabel>
+                  <FormLabel>{m.apiKeys_form_name()}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Production API Key"
@@ -157,7 +158,7 @@ export function EditApiKeyDialog({
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Enabled</FormLabel>
+                    <FormLabel className="text-base">{m.apiKeys_status_active()}</FormLabel>
                     <p className="text-sm text-muted-foreground">
                       Disabled API keys cannot be used for authentication
                     </p>
@@ -176,7 +177,7 @@ export function EditApiKeyDialog({
               name="metadata"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Metadata (Optional JSON)</FormLabel>
+                  <FormLabel>{m.apiKeys_form_metadata()}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder='{"environment": "production"}'
@@ -195,7 +196,7 @@ export function EditApiKeyDialog({
                 disabled={isSubmitting}
                 className="cursor-pointer"
               >
-                Cancel
+                {m.apiKeys_form_buttonCancel()}
               </Button>
               <Button type="submit" disabled={isSubmitting || !apiKey} className="cursor-pointer">
                 {isSubmitting ? (

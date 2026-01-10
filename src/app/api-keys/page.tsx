@@ -10,6 +10,7 @@ import { authClient } from "@/lib/auth-client"
 import { useSession } from "@/lib/auth-client"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import * as m from "@/paraglide/messages"
 import type { ApiKey } from "./types"
 
 async function fetchApiKeys(): Promise<ApiKey[]> {
@@ -104,8 +105,8 @@ export default function ApiKeysPage() {
 
   return (
     <BaseLayout
-      title="API Keys"
-      description="Manage your API keys for programmatic access"
+      title={m.apiKeys_title()}
+      description={m.apiKeys_description()}
     >
       <div className="@container/main px-4 lg:px-6">
         <ApiKeyDataTable

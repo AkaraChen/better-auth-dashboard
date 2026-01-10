@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import type { FullOrganization } from "../../../types"
+import * as m from "@/paraglide/messages"
 
 interface OrganizationOverviewTabProps {
   organization: FullOrganization
@@ -45,24 +46,24 @@ export function OrganizationOverviewTab({
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Building2 className="h-5 w-5" />
-            Basic Information
+            {m.orgs_detail_basicInfo()}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-sm text-muted-foreground">Organization ID</label>
+            <label className="text-sm text-muted-foreground">{m.orgs_detail_orgId()}</label>
             <p className="font-mono text-sm">{organization.id}</p>
           </div>
           <div>
-            <label className="text-sm text-muted-foreground">Name</label>
+            <label className="text-sm text-muted-foreground">{m.orgs_detail_name()}</label>
             <p className="font-medium">{organization.name}</p>
           </div>
           <div>
-            <label className="text-sm text-muted-foreground">Slug</label>
+            <label className="text-sm text-muted-foreground">{m.orgs_detail_slug()}</label>
             <p className="font-mono">@{organization.slug}</p>
           </div>
           <div>
-            <label className="text-sm text-muted-foreground">Created At</label>
+            <label className="text-sm text-muted-foreground">{m.orgs_detail_createdAt()}</label>
             <p>{formatDateTime(organization.createdAt)}</p>
           </div>
         </CardContent>
@@ -70,25 +71,25 @@ export function OrganizationOverviewTab({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Quick Stats</CardTitle>
+          <CardTitle className="text-lg">{m.orgs_detail_quickStats()}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center p-4 bg-muted rounded-lg">
               <p className="text-2xl font-bold">{organization.members.length}</p>
-              <p className="text-sm text-muted-foreground">Total Members</p>
+              <p className="text-sm text-muted-foreground">{m.orgs_detail_totalMembers()}</p>
             </div>
             <div className="text-center p-4 bg-muted rounded-lg">
               <p className="text-2xl font-bold">{pendingInvitationsCount}</p>
-              <p className="text-sm text-muted-foreground">Pending Invitations</p>
+              <p className="text-sm text-muted-foreground">{m.orgs_detail_pendingInvites()}</p>
             </div>
             <div className="text-center p-4 bg-muted rounded-lg">
               <p className="text-2xl font-bold">{adminCount + ownerCount}</p>
-              <p className="text-sm text-muted-foreground">Admins & Owners</p>
+              <p className="text-sm text-muted-foreground">{m.orgs_detail_adminsOwners()}</p>
             </div>
             <div className="text-center p-4 bg-muted rounded-lg">
               <p className="text-2xl font-bold">{memberCount}</p>
-              <p className="text-sm text-muted-foreground">Members</p>
+              <p className="text-sm text-muted-foreground">{m.orgs_detail_memberCount()}</p>
             </div>
           </div>
         </CardContent>

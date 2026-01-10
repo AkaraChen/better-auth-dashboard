@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import * as m from "@/paraglide/messages"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -151,7 +152,7 @@ export function AdminDataTable({
     },
     {
       accessorKey: "name",
-      header: "User",
+      header: m.users_table_header_user(),
       cell: ({ row }) => {
         const user = row.original
         return (
@@ -167,7 +168,7 @@ export function AdminDataTable({
               )}
             </Avatar>
             <div className="flex flex-col">
-              <span className="font-medium">{user.name || "Unnamed User"}</span>
+              <span className="font-medium">{user.name || m.users_table_unnamedUser()}</span>
               <span className="text-sm text-muted-foreground">{user.email}</span>
             </div>
           </div>
@@ -176,7 +177,7 @@ export function AdminDataTable({
     },
     {
       accessorKey: "emailVerified",
-      header: "Email Verified",
+      header: m.users_table_header_emailVerified(),
       cell: ({ row }) => {
         const verified = row.getValue("emailVerified") as boolean
         return (
@@ -188,14 +189,14 @@ export function AdminDataTable({
                 : "text-orange-600 bg-orange-50 dark:text-orange-400 dark:bg-orange-900/20"
             }
           >
-            {verified ? "Verified" : "Pending"}
+            {verified ? m.users_table_statusVerified() : m.users_table_statusPending()}
           </Badge>
         )
       },
     },
     {
       accessorKey: "role",
-      header: "Roles",
+      header: m.users_table_header_roles(),
       cell: ({ row }) => {
         const role = (row.original as any).role as string | undefined
         if (!role) {
@@ -219,7 +220,7 @@ export function AdminDataTable({
     },
     {
       accessorKey: "banned",
-      header: "Status",
+      header: m.users_table_header_status(),
       cell: ({ row }) => {
         const banned = row.getValue("banned") as boolean
         return (
@@ -227,12 +228,12 @@ export function AdminDataTable({
             {banned ? (
               <>
                 <ShieldX className="mr-1 size-3" />
-                Banned
+                {m.users_table_statusBanned()}
               </>
             ) : (
               <>
                 <ShieldCheck className="mr-1 size-3" />
-                Active
+                {m.users_table_statusActive()}
               </>
             )}
           </Badge>
@@ -244,7 +245,7 @@ export function AdminDataTable({
     },
     {
       accessorKey: "createdAt",
-      header: "Created",
+      header: m.users_table_header_created(),
       cell: ({ row }) => {
         const date = row.getValue("createdAt") as Date
         return <span className="text-sm">{formatDate(date)}</span>
@@ -252,7 +253,7 @@ export function AdminDataTable({
     },
     {
       accessorKey: "updatedAt",
-      header: "Updated",
+      header: m.users_table_header_updated(),
       cell: ({ row }) => {
         const date = row.getValue("updatedAt") as Date
         return <span className="text-sm">{formatDate(date)}</span>
@@ -260,7 +261,7 @@ export function AdminDataTable({
     },
     {
       id: "actions",
-      header: "Actions",
+      header: m.users_table_header_actions(),
       cell: ({ row }) => {
         const user = row.original
         return (
@@ -272,13 +273,13 @@ export function AdminDataTable({
               onClick={() => onUpdateUser(user)}
             >
               <Pencil className="size-4" />
-              <span className="sr-only">Edit user</span>
+              <span className="sr-only">{m.users_table_actionEdit()}</span>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer">
                   <EllipsisVertical className="size-4" />
-                  <span className="sr-only">More actions</span>
+                  <span className="sr-only">{m.users_table_actionMore()}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -288,7 +289,7 @@ export function AdminDataTable({
                     onClick={() => onUnbanUser(user.id)}
                   >
                     <Undo2 className="mr-2 size-4" />
-                    Unban User
+                    {m.users_table_actionUnban()}
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem
@@ -296,7 +297,7 @@ export function AdminDataTable({
                     onClick={() => onBanUser(user.id)}
                   >
                     <Ban className="mr-2 size-4" />
-                    Ban User
+                    {m.users_table_actionBan()}
                   </DropdownMenuItem>
                 )}
                 {onManageSessions && (
@@ -307,7 +308,7 @@ export function AdminDataTable({
                       onClick={() => onManageSessions(user)}
                     >
                       <Monitor className="mr-2 size-4" />
-                      Manage Sessions
+                      {m.users_table_actionSessions()}
                     </DropdownMenuItem>
                   </>
                 )}
@@ -319,7 +320,7 @@ export function AdminDataTable({
                       onClick={() => onSetPassword(user)}
                     >
                       <Key className="mr-2 size-4" />
-                      Set Password
+                      {m.users_table_actionPassword()}
                     </DropdownMenuItem>
                   </>
                 )}
@@ -330,7 +331,7 @@ export function AdminDataTable({
                   onClick={() => onDeleteUser(user.id)}
                 >
                   <Trash2 className="mr-2 size-4" />
-                  Delete User
+                  {m.users_table_actionDelete()}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -390,7 +391,7 @@ export function AdminDataTable({
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search users..."
+              placeholder={m.users_table_search()}
               value={globalFilter ?? ""}
               onChange={(event) => setGlobalFilter(String(event.target.value))}
               className="pl-9"
@@ -401,7 +402,7 @@ export function AdminDataTable({
         <div className="flex items-center space-x-2">
           <Button onClick={onCreateUser} className="cursor-pointer">
             <Pencil className="mr-2 size-4" />
-            Add User
+            {m.users_table_addUser()}
           </Button>
           <Button
             variant="outline"
@@ -410,7 +411,7 @@ export function AdminDataTable({
             className="cursor-pointer"
           >
             <RefreshCw className={`mr-2 size-4 ${loading ? "animate-spin" : ""}`} />
-            Refresh
+            {m.users_table_refresh()}
           </Button>
         </div>
       </div>
@@ -429,20 +430,20 @@ export function AdminDataTable({
               <SelectValue placeholder="Select Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Users</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="banned">Banned</SelectItem>
+              <SelectItem value="all">{m.users_table_filterAll()}</SelectItem>
+              <SelectItem value="active">{m.users_table_filterActive()}</SelectItem>
+              <SelectItem value="banned">{m.users_table_filterBanned()}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
           <Label htmlFor="column-visibility" className="text-sm font-medium">
-            Column Visibility
+            {m.users_table_columnVisibility()}
           </Label>
           <DropdownMenu>
             <DropdownMenuTrigger asChild id="column-visibility">
               <Button variant="outline" className="cursor-pointer w-full">
-                Columns <ChevronDown className="ml-2 size-4" />
+                {m.users_table_columns()} <ChevronDown className="ml-2 size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -497,7 +498,7 @@ export function AdminDataTable({
                 <TableCell colSpan={columns.length} className="h-24 text-center">
                   <div className="flex items-center justify-center">
                     <RefreshCw className="mr-2 size-4 animate-spin" />
-                    Loading users...
+                    {m.users_table_loading()}
                   </div>
                 </TableCell>
               </TableRow>
@@ -514,7 +515,7 @@ export function AdminDataTable({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No users found.
+                  {m.users_table_noResults()}
                 </TableCell>
               </TableRow>
             )}
@@ -526,7 +527,7 @@ export function AdminDataTable({
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex items-center space-x-2">
           <Label htmlFor="page-size" className="text-sm font-medium">
-            Show
+            {m.users_table_show()}
           </Label>
           <Select
             value={`${table.getState().pagination.pageSize}`}
@@ -545,14 +546,14 @@ export function AdminDataTable({
           </Select>
         </div>
         <div className="flex-1 text-sm text-muted-foreground hidden sm:block">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredSelectedRowModel().rows.length} {m.users_table_of()}{" "}
+          {table.getFilteredRowModel().rows.length} {m.users_table_rowSelected()}
         </div>
         <div className="flex items-center space-x-6 lg:space-x-8">
           <div className="flex items-center space-x-2 hidden sm:flex">
-            <p className="text-sm font-medium">Page</p>
+            <p className="text-sm font-medium">{m.users_table_page()}</p>
             <strong className="text-sm">
-              {table.getState().pagination.pageIndex + 1} of {Math.ceil(totalCount / table.getState().pagination.pageSize)}
+              {table.getState().pagination.pageIndex + 1} {m.users_table_of()} {Math.ceil(totalCount / table.getState().pagination.pageSize)}
             </strong>
           </div>
           <div className="flex items-center space-x-2">
@@ -563,7 +564,7 @@ export function AdminDataTable({
               disabled={!table.getCanPreviousPage() || loading}
               className="cursor-pointer"
             >
-              Previous
+              {m.users_table_previous()}
             </Button>
             <Button
               variant="outline"
@@ -572,7 +573,7 @@ export function AdminDataTable({
               disabled={!table.getCanNextPage() || loading}
               className="cursor-pointer"
             >
-              Next
+              {m.users_table_next()}
             </Button>
           </div>
         </div>
