@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -207,13 +208,15 @@ export function OrganizationDataTable({
         return (
           <div className="flex items-center gap-2">
             <Button
+              asChild
               variant="ghost"
               size="sm"
               className="h-8 w-8 cursor-pointer"
-              onClick={() => setExpandedOrgId(expandedOrgId === org.id ? null : org.id)}
             >
-              <Eye className="size-4" />
-              <span className="sr-only">View details</span>
+              <Link to={`/organizations/${org.id}`}>
+                <Eye className="size-4" />
+                <span className="sr-only">View details</span>
+              </Link>
             </Button>
             <Button
               variant="ghost"

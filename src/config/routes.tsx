@@ -8,6 +8,7 @@ const Landing = lazy(() => import('@/app/landing/page'))
 const Dashboard = lazy(() => import('@/app/dashboard/page'))
 const Users = lazy(() => import('@/app/users/page'))
 const Organizations = lazy(() => import('@/app/organizations/page'))
+const OrganizationDetail = lazy(() => import('@/app/organizations/[orgId]/page'))
 const FAQs = lazy(() => import('@/app/faqs/page'))
 
 // Auth pages
@@ -74,6 +75,11 @@ export const routes: RouteConfig[] = [
     title: "Organizations",
     icon: Building2,
     requiresFeature: "organizations"
+  },
+  {
+    path: "/organizations/:orgId",
+    element: <OrganizationDetail />,
+    hide: true
   },
   {
     path: "/faqs",

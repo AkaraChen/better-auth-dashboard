@@ -1,0 +1,145 @@
+"use client"
+
+import {
+  Building2,
+  Link as LinkIcon,
+} from "lucide-react"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import type { FullOrganization } from "../../../types"
+
+interface OrganizationOverviewTabProps {
+  organization: FullOrganization
+}
+
+export function OrganizationOverviewTab({
+  organization,
+}: OrganizationOverviewTabProps) {
+  const formatDateTime = (date: Date | string) => {
+    return new Date(date).toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  }
+
+  const adminCount = organization.members.filter(
+    (m: { role: string }) => m.role === "admin"
+  ).length
+  const memberCount = organization.members.filter(
+    (m: { role: string }) => m.role === "member"
+  ).length
+  const ownerCount = organization.members.filter(
+    (m: { role: string }) => m.role === "owner"
+  ).length
+  const pendingInvitationsCount = organization.invitations.filter(
+    (i: { status: string }) => i.status === "pending"
+  ).length
+
+  return (
+    <div className="grid gap-6 md:grid-cols-2">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Building2 className="h-5 w-5" />
+            Basic Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <label className="text-sm text-muted-foreground">Organization ID</label>
+            <p className="font-mono text-sm">{organization.id}</p>
+          </div>
+          <div>
+            <label className="text-sm text-muted-foreground">Name</label>
+            <p className="font-medium">{organization.name}</p>
+          </div>
+          <div>
+            <label className="text-sm text-muted-foreground">Slug</label>
+            <p className="font-mono">@{organization.slug}</p>
+          </div>
+          <div>
+            <label className="text-sm text-muted-foreground">Created At</label>
+            <p>{formatDateTime(organization.createdAt)}</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <LinkIcon className="h-5 w-5" />
+            Additional Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {organization.logo && (
+            <div>
+              <label className="text-sm text-muted-foreground">Logo URL</label>
+              <div className="flex items-center gap-2 mt-1">
+                <img
+                  src={organization.logo}
+                  alt=""
+                  className="h-8 w-8 rounded"
+                />
+                <a
+                  href={organization.logo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary hover:underline"
+                >
+                  {organization.logo}
+                </a>
+              </div>
+            </div>
+          )}
+          {organization.metadata && Object.keys(organization.metadata).length > 0 ? (
+            <div>
+              <label className="text-sm text-muted-foreground">Metadata</label>
+              <pre className="mt-1 text-xs bg-muted p-3 rounded overflow-x-auto">
+                {JSON.stringify(organization.metadata, null, 2)}
+              </pre>
+            </div>
+          ) : (
+            <div>
+              <label className="text-sm text-muted-foreground">Metadata</label>
+              <p className="text-sm text-muted-foreground italic">No metadata</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="md:col-span-2">
+        <CardHeader>
+          <CardTitle className="text-lg">Quick Stats</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <p className="text-2xl font-bold">{organization.members.length}</p>
+              <p className="text-sm text-muted-foreground">Total Members</p>
+            </div>
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <p className="text-2xl font-bold">{pendingInvitationsCount}</p>
+              <p className="text-sm text-muted-foreground">Pending Invitations</p>
+            </div>
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <p className="text-2xl font-bold">{adminCount + ownerCount}</p>
+              <p className="text-sm text-muted-foreground">Admins & Owners</p>
+            </div>
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <p className="text-2xl font-bold">{memberCount}</p>
+              <p className="text-sm text-muted-foreground">Members</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
