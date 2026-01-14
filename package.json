@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "pnpm i18n:generate && tsc -b && vite build",
+    "i18n:generate": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
     "lint": "eslint .",
     "preview": "vite preview",
     "mock-server": "tsx mock-server.ts"
