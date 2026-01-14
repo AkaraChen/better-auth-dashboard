@@ -10,6 +10,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { useQuery } from "@tanstack/react-query"
 import { authClient, useSession } from "@/lib/auth-client"
+import type { FullOrganization } from "@/app/organizations/types"
 import dashboardConfig from "~/dashboard.config"
 import type { Feature } from "~/dashboard.config.type"
 
@@ -37,6 +38,25 @@ export function SectionCards() {
     enabled: dashboardConfig.features.includes("organizations"),
   })
 
+  const { data: fullOrganizations, isPending: fullOrgsPending } = useQuery({
+    queryKey: ["organizations", "full"],
+    queryFn: async () => {
+      const listResponse = await authClient.organization.list()
+      if (listResponse.error || !listResponse.data) return []
+
+      const fullOrgsPromises = listResponse.data.map(async (org) => {
+        const fullResponse = await authClient.organization.getFullOrganization({
+          query: { organizationId: org.id }
+        })
+        return fullResponse.error ? null : (fullResponse.data as FullOrganization)
+      })
+
+      const fullOrgs = await Promise.all(fullOrgsPromises)
+      return fullOrgs.filter((org): org is FullOrganization => org !== null)
+    },
+    enabled: dashboardConfig.features.includes("organizations"),
+  })
+
   const { data: apiKeys, isPending: apiKeysPending } = useQuery({
     queryKey: ["api-keys"],
     queryFn: async () => {
@@ -51,9 +71,15 @@ export function SectionCards() {
   const totalUsers = users.length
   const adminUsers = users.filter((u: any) => u.role.includes("admin")).length
   const totalOrgs = organizations?.length ?? 0
-  const totalMembers = 0 // TODO: Calculate from organization member data
+  const totalMembers = fullOrganizations?.reduce(
+    (sum, org) => sum + (org.members?.length ?? 0),
+    0
+  ) ?? 0
   const activeApiKeys = apiKeys?.filter((k: any) => k.enabled && (!k.expiresAt || new Date(k.expiresAt) > new Date())).length ?? 0
-  const pendingInvites = 0 // TODO: Calculate from organization invitation data
+  const pendingInvites = fullOrganizations?.reduce(
+    (sum, org) => sum + (org.invitations?.filter((invitation) => invitation.status === "pending").length ?? 0),
+    0
+  ) ?? 0
 
   const hasFeature = (feature: Feature) => dashboardConfig.features.includes(feature)
 
@@ -75,7 +101,7 @@ export function SectionCards() {
           title={m.dashboard_organizations()}
           value={totalOrgs}
           subtitle={m.dashboard_totalMembers({ count: totalMembers })}
-          isLoading={orgsPending}
+          isLoading={orgsPending || fullOrgsPending}
         />
       )}
 
@@ -95,7 +121,7 @@ export function SectionCards() {
           title={m.dashboard_pendingInvites()}
           value={pendingInvites}
           subtitle={m.dashboard_awaitingAcceptance()}
-          isLoading={orgsPending}
+          isLoading={orgsPending || fullOrgsPending}
         />
       )}
     </div>
