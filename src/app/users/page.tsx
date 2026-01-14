@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import * as m from "@/paraglide/messages"
 import { BaseLayout } from "@/components/layouts/base-layout"
 import { AdminDataTable } from "./components/admin-data-table"
@@ -11,6 +11,7 @@ import { UserSessionsDialog } from "./components/user-sessions-dialog"
 import { SetPasswordDialog, type SetPasswordFormValues } from "./components/set-password-dialog"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export interface BetterAuthUser {
   id: string
@@ -33,15 +34,17 @@ export interface UserSession {
   impersonatedBy: string | null
 }
 
+interface UsersQueryData {
+  users: BetterAuthUser[]
+  total: number
+}
+
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<BetterAuthUser[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const queryClient = useQueryClient()
   const [pagination, setPagination] = useState({
     limit: 20,
     offset: 0
   })
-  const [totalCount, setTotalCount] = useState(0)
 
   // Dialog states
   const [userToDelete, setUserToDelete] = useState<BetterAuthUser | null>(null)
@@ -60,10 +63,14 @@ export default function AdminUsersPage() {
     user: BetterAuthUser | null
   }>({ open: false, user: null })
 
-  const fetchUsers = async () => {
-    try {
-      setLoading(true)
-      setError(null)
+  const {
+    data: usersData,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery<UsersQueryData, Error>({
+    queryKey: ["users", "list", pagination.limit, pagination.offset],
+    queryFn: async () => {
       const response = await authClient.admin.listUsers({
         query: {
           limit: String(pagination.limit),
@@ -74,48 +81,41 @@ export default function AdminUsersPage() {
       })
 
       if (response.error) {
-        setError(response.error.message || m.users_error_fetchFailed())
-      } else if (response.data) {
-        setUsers(response.data.users as BetterAuthUser[] || [])
-        setTotalCount(response.data.total || 0)
+        throw new Error(response.error.message || m.users_error_fetchFailed())
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : m.users_error_fetchFailed())
-    } finally {
-      setLoading(false)
-    }
-  }
 
-  useEffect(() => {
-    fetchUsers()
-  }, [pagination])
+      return {
+        users: (response.data?.users as BetterAuthUser[]) || [],
+        total: response.data?.total || 0,
+      }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  })
 
-  // Create user
-  const handleCreateUser = async (values: CreateUserFormValues) => {
-    try {
+  const users = usersData?.users ?? []
+  const totalCount = usersData?.total ?? 0
+
+  const createUserMutation = useMutation<void, Error, CreateUserFormValues>({
+    mutationFn: async (values: CreateUserFormValues) => {
       const result = await authClient.admin.createUser({
         email: values.email,
         password: values.password!,
         name: values.name,
         role: (values.role || "user") as "admin" | "user",
-        data: {
-          emailVerified: values.emailVerified,
-        },
+        data: { emailVerified: values.emailVerified },
       })
 
       if (result.error) {
         throw new Error(result.error.message || m.users_error_createFailed())
       }
-
-      await fetchUsers()
-    } catch (err) {
-      throw err
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] })
     }
-  }
+  })
 
-  // Update user
-  const handleUpdateUser = async (userId: string, values: EditUserFormValues) => {
-    try {
+  const updateUserMutation = useMutation<void, Error, { userId: string; values: EditUserFormValues }>({
+    mutationFn: async ({ userId, values }) => {
       const result = await authClient.admin.updateUser({
         userId,
         data: {
@@ -129,62 +129,91 @@ export default function AdminUsersPage() {
       if (result.error) {
         throw new Error(result.error.message || m.users_error_updateFailed())
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] })
+    },
+  })
 
-      await fetchUsers()
-    } catch (err) {
-      throw err
-    }
-  }
-
-  // Delete user
-  const handleDeleteUser = async (userId: string) => {
-    try {
+  const deleteUserMutation = useMutation<void, Error, string>({
+    mutationFn: async (userId: string) => {
       const result = await authClient.admin.removeUser({ userId })
 
       if (result.error) {
         throw new Error(result.error.message || m.users_error_deleteFailed())
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] })
+    },
+  })
 
-      await fetchUsers()
-    } catch (err) {
-      throw err
-    }
-  }
+  const banUserMutation = useMutation<void, Error, { userId: string; reason?: string }>({
+    mutationFn: async ({ userId, reason }) => {
+      const result = await authClient.admin.banUser({
+        userId,
+        banReason: reason,
+      })
 
-  // Ban user
+      if (result.error) {
+        throw new Error(result.error.message || m.users_error_banFailed())
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] })
+      toast.success(m.users_toast_banned())
+    },
+    onError: (mutationError) => {
+      toast.error(mutationError.message)
+    },
+  })
+
+  const unbanUserMutation = useMutation<void, Error, string>({
+    mutationFn: async (userId: string) => {
+      const result = await authClient.admin.unbanUser({ userId })
+
+      if (result.error) {
+        throw new Error(result.error.message || m.users_error_unbanFailed())
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] })
+      toast.success(m.users_toast_unbanned())
+    },
+    onError: (mutationError) => {
+      toast.error(mutationError.message)
+    },
+  })
+
+  const setPasswordMutation = useMutation<void, Error, { userId: string; values: SetPasswordFormValues }>({
+    mutationFn: async ({ userId, values }) => {
+      const result = await authClient.admin.setUserPassword({
+        userId,
+        newPassword: values.newPassword,
+      })
+
+      if (result.error) {
+        throw new Error(result.error.message || m.users_error_updateFailed())
+      }
+    },
+    onError: (mutationError) => {
+      toast.error(mutationError.message)
+    },
+  })
+
   const handleBanUser = (userId: string) => {
     setUserToDelete(users.find(u => u.id === userId) || null)
-    // We'll use a separate dialog for ban confirmation
     const reason = prompt(m.users_ban_prompt())
     if (reason !== null) {
-      authClient.admin.banUser({
+      banUserMutation.mutate({
         userId,
-        banReason: reason || undefined
-      }).then(async (result) => {
-        if (result.error) {
-          toast.error(result.error.message || m.users_error_banFailed())
-        } else {
-          toast.success(m.users_toast_banned())
-          await fetchUsers()
-        }
+        reason: reason || undefined,
       })
     }
   }
 
-  // Unban user
-  const handleUnbanUser = async (userId: string) => {
-    try {
-      const result = await authClient.admin.unbanUser({ userId })
-
-      if (result.error) {
-        toast.error(result.error.message || m.users_error_unbanFailed())
-      } else {
-        toast.success(m.users_toast_unbanned())
-        await fetchUsers()
-      }
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : m.users_error_unbanFailed())
-    }
+  const handleUnbanUser = (userId: string) => {
+    unbanUserMutation.mutate(userId)
   }
 
   const handlePaginationChange = (newLimit: number, newOffset: number) => {
@@ -227,21 +256,6 @@ export default function AdminUsersPage() {
     setSetPasswordDialogState({ open: false, user: null })
   }
 
-  const handleSetPassword = async (userId: string, values: SetPasswordFormValues) => {
-    try {
-      const result = await authClient.admin.setUserPassword({
-        userId,
-        newPassword: values.newPassword,
-      })
-
-      if (result.error) {
-        throw new Error(result.error.message || m.users_error_updateFailed())
-      }
-    } catch (err) {
-      throw err
-    }
-  }
-
   return (
     <BaseLayout
       title={m.users_title()}
@@ -250,8 +264,8 @@ export default function AdminUsersPage() {
       <div className="@container/main px-4 lg:px-6">
         <AdminDataTable
           users={users}
-          loading={loading}
-          error={error}
+          loading={isLoading}
+          error={error?.message || null}
           totalCount={totalCount}
           onCreateUser={openCreateDialog}
           onUpdateUser={openEditDialog}
@@ -260,7 +274,7 @@ export default function AdminUsersPage() {
           onUnbanUser={handleUnbanUser}
           onManageSessions={openSessionsDialog}
           onSetPassword={openSetPasswordDialog}
-          onRefresh={fetchUsers}
+          onRefresh={() => refetch()}
           onPaginationChange={handlePaginationChange}
         />
 
@@ -268,7 +282,7 @@ export default function AdminUsersPage() {
         <CreateUserDialog
           open={createDialogOpen}
           onOpenChange={setCreateDialogOpen}
-          onSubmit={handleCreateUser}
+          onSubmit={(values) => createUserMutation.mutateAsync(values)}
         />
 
         {/* Edit User Dialog */}
@@ -276,7 +290,7 @@ export default function AdminUsersPage() {
           user={editDialogState.user}
           open={editDialogState.open}
           onOpenChange={closeEditDialog}
-          onSubmit={handleUpdateUser}
+          onSubmit={(userId, values) => updateUserMutation.mutateAsync({ userId, values })}
         />
 
         {/* Delete Confirmation Dialog */}
@@ -284,7 +298,7 @@ export default function AdminUsersPage() {
           user={userToDelete}
           open={deleteDialogOpen}
           onOpenChange={setDeleteDialogOpen}
-          onConfirm={handleDeleteUser}
+          onConfirm={(userId) => deleteUserMutation.mutateAsync(userId)}
         />
 
         {/* Sessions Management Dialog */}
@@ -299,7 +313,7 @@ export default function AdminUsersPage() {
           user={setPasswordDialogState.user}
           open={setPasswordDialogState.open}
           onOpenChange={closeSetPasswordDialog}
-          onSubmit={handleSetPassword}
+          onSubmit={(userId, values) => setPasswordMutation.mutateAsync({ userId, values })}
         />
       </div>
     </BaseLayout>
