@@ -3,6 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { useMutation } from "@tanstack/react-query"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,6 +23,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { signIn } from "@/lib/auth-client"
 import * as m from "@/paraglide/messages"
 
@@ -43,19 +46,26 @@ export function LoginForm1({
     },
   })
 
-  async function onSubmit(data: LoginFormValues) {
-    const { error } = await signIn.email({
-      email: data.email,
-      password: data.password,
-    })
+  const signInMutation = useMutation({
+    mutationFn: async (data: LoginFormValues) => {
+      const { error } = await signIn.email({
+        email: data.email,
+        password: data.password,
+      })
+      if (error) {
+        throw new Error(m.auth_signIn_error())
+      }
+    },
+    onSuccess: () => {
+      window.location.href = "/"
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
 
-    if (error) {
-      console.error("Sign in error:", error)
-      // TODO: Show error to user
-      return
-    }
-
-    window.location.href = "/"
+  const onSubmit = (data: LoginFormValues) => {
+    signInMutation.mutate(data)
   }
 
   return (
@@ -110,8 +120,15 @@ export function LoginForm1({
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full cursor-pointer">
-                    {m.auth_signIn_button()}
+                  <Button type="submit" className="w-full cursor-pointer" disabled={signInMutation.isPending}>
+                    {signInMutation.isPending ? (
+                      <>
+                        <LoadingSpinner className="mr-2 size-4" />
+                        {m.auth_signIn_button()}
+                      </>
+                    ) : (
+                      m.auth_signIn_button()
+                    )}
                   </Button>
                 </div>
                 <div className="text-center text-sm">

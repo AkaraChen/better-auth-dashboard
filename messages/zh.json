@@ -323,6 +323,7 @@
   "auth_signIn_privacyLink": "隐私政策",
   "auth_signIn_validation_invalidEmail": "无效的邮箱地址",
   "auth_signIn_validation_passwordMin": "密码至少需要 6 个字符",
+  "auth_signIn_error": "邮箱或密码无效",
   "auth_signUp_title": "创建账户",
   "auth_signUp_description": "输入您的信息以创建新账户",
   "auth_signUp_firstName": "名",
