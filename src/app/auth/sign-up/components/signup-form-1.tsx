@@ -3,6 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { useMutation } from "@tanstack/react-query"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,6 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Checkbox } from "@/components/ui/checkbox"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { signUp } from "@/lib/auth-client"
 import * as m from "@/paraglide/messages"
 
@@ -55,20 +58,28 @@ export function SignupForm1({
     },
   })
 
-  async function onSubmit(data: SignupFormValues) {
-    const { error } = await signUp.email({
-      email: data.email,
-      password: data.password,
-      name: `${data.firstName} ${data.lastName}`,
-    })
+  const signUpMutation = useMutation({
+    mutationFn: async (data: SignupFormValues) => {
+      const { error } = await signUp.email({
+        email: data.email,
+        password: data.password,
+        name: `${data.firstName} ${data.lastName}`,
+      })
 
-    if (error) {
-      console.error("Sign up error:", error)
-      // TODO: Show error to user
-      return
-    }
+      if (error) {
+        throw new Error(m.auth_signUp_error())
+      }
+    },
+    onSuccess: () => {
+      window.location.href = "/"
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
 
-    window.location.href = "/"
+  const onSubmit = (data: SignupFormValues) => {
+    signUpMutation.mutate(data)
   }
 
   return (
@@ -174,8 +185,15 @@ export function SignupForm1({
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full cursor-pointer">
-                    {m.auth_signUp_button()}
+                  <Button type="submit" className="w-full cursor-pointer" disabled={signUpMutation.isPending}>
+                    {signUpMutation.isPending ? (
+                      <>
+                        <LoadingSpinner className="mr-2 size-4" />
+                        {m.auth_signUp_buttonCreating()}
+                      </>
+                    ) : (
+                      m.auth_signUp_button()
+                    )}
                   </Button>
 
                   <Button variant="outline" className="w-full cursor-pointer" type="button">

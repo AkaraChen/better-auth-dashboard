@@ -350,6 +350,8 @@
   "auth_signUp_validation_confirmPassword": "请确认您的密码",
   "auth_signUp_validation_termsRequired": "您必须同意条款",
   "auth_signUp_validation_passwordsNotMatch": "密码不匹配",
+  "auth_signUp_error": "创建账户失败，请重试",
+  "auth_signUp_buttonCreating": "创建中...",
   "auth_forgotPassword_title": "忘记密码？",
   "auth_forgotPassword_description": "输入您的邮箱地址，我们将向您发送重置密码的链接",
   "auth_forgotPassword_email": "邮箱",
