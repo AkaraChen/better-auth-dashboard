@@ -350,6 +350,8 @@
   "auth_signUp_validation_confirmPassword": "Please confirm your password",
   "auth_signUp_validation_termsRequired": "You must agree to the terms",
   "auth_signUp_validation_passwordsNotMatch": "Passwords don't match",
+  "auth_signUp_error": "Failed to create account. Please try again.",
+  "auth_signUp_buttonCreating": "Creating...",
   "auth_forgotPassword_title": "Forgot your password?",
   "auth_forgotPassword_description": "Enter your email address and we'll send you a link to reset your password",
   "auth_forgotPassword_email": "Email",
