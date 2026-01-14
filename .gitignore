@@ -142,3 +142,6 @@ vite.config.ts.timestamp-*
 
 # database
 *.db
+
+# inlang cache
+project.inlang/cache

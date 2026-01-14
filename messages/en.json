@@ -323,6 +323,7 @@
   "auth_signIn_privacyLink": "Privacy Policy",
   "auth_signIn_validation_invalidEmail": "Invalid email address",
   "auth_signIn_validation_passwordMin": "Password must be at least 6 characters",
+  "auth_signIn_error": "Invalid email or password",
   "auth_signUp_title": "Create Account",
   "auth_signUp_description": "Enter your information to create a new account",
   "auth_signUp_firstName": "First Name",

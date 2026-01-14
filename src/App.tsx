@@ -1,6 +1,7 @@
 import { BrowserRouter as Router } from 'react-router-dom'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from '@/components/ui/sonner'
 import { SidebarConfigProvider } from '@/contexts/sidebar-context'
 import { AppRouter } from '@/components/router/app-router'
 import { Seo } from '@/components/seo'
@@ -21,6 +22,7 @@ function App() {
     <div className="font-sans antialiased" style={{ fontFamily: 'var(--font-inter)' }}>
       <Seo />
       <QueryClientProvider client={queryClient}>
+        <Toaster />
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
           <SidebarConfigProvider>
             <Router basename={basename}>
