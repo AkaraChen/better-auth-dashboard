@@ -33,6 +33,7 @@ import { Button } from "@/components/ui/button"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { authClient } from "@/lib/auth-client"
 import type { OrganizationMember } from "../../types"
+import * as m from "@/paraglide/messages"
 
 const updateMemberRoleFormSchema = z.object({
   role: z.enum(["member", "admin"]),
@@ -85,7 +86,7 @@ export function UpdateMemberRoleDialog({
       return response.data
     },
     onSuccess: () => {
-      toast.success("Member role updated successfully")
+      toast.success(m.orgs_member_toast_roleUpdated())
       queryClient.invalidateQueries({
         queryKey: ["organizations", organizationId, "full"],
       })
@@ -104,14 +105,9 @@ export function UpdateMemberRoleDialog({
     <Dialog open={controlledOpen} onOpenChange={controlledOnOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Update Member Role</DialogTitle>
+          <DialogTitle>{m.orgs_member_dialog_updateRole_title()}</DialogTitle>
           <DialogDescription>
-            {member && (
-              <>
-                Change role for{" "}
-                <span className="font-medium">{member.user.email}</span>
-              </>
-            )}
+            {member && m.orgs_member_dialog_updateRole_description({ email: member.user.email })}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -121,19 +117,19 @@ export function UpdateMemberRoleDialog({
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
+                  <FormLabel>{m.orgs_member_form_role()}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger className="cursor-pointer">
-                        <SelectValue placeholder="Select a role" />
+                        <SelectValue placeholder={m.orgs_member_form_selectRole()} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="member">Member</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="member">{m.orgs_member_role_member()}</SelectItem>
+                      <SelectItem value="admin">{m.orgs_member_role_admin()}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -148,7 +144,7 @@ export function UpdateMemberRoleDialog({
                 disabled={updateMutation.isPending}
                 className="cursor-pointer"
               >
-                Cancel
+                {m.orgs_member_form_buttonCancel()}
               </Button>
               <Button
                 type="submit"
@@ -158,10 +154,10 @@ export function UpdateMemberRoleDialog({
                 {updateMutation.isPending ? (
                   <>
                     <LoadingSpinner className="mr-2 size-4" />
-                    Updating...
+                    {m.orgs_member_form_buttonUpdating()}
                   </>
                 ) : (
-                  "Update Role"
+                  m.orgs_member_form_buttonUpdate()
                 )}
               </Button>
             </DialogFooter>

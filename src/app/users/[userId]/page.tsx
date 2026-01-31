@@ -91,7 +91,7 @@ export default function UserDetailPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users", userId] })
       queryClient.invalidateQueries({ queryKey: ["users", "list"] })
-      toast.success("User updated successfully")
+      toast.success(m.users_toast_updated())
       setEditDialogOpen(false)
     },
     onError: (err) => {
@@ -110,7 +110,7 @@ export default function UserDetailPage() {
       }
     },
     onSuccess: () => {
-      toast.success("Password updated successfully")
+      toast.success(m.users_password_success())
       setPasswordDialogOpen(false)
     },
     onError: (err) => {
@@ -184,12 +184,12 @@ export default function UserDetailPage() {
 
   if (!userId) {
     return (
-      <BaseLayout title="Invalid User">
+      <BaseLayout title={m.users_detail_error_invalidTitle()}>
         <div className="flex flex-col items-center justify-center px-4 py-12">
           <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground mb-4">Invalid user ID</p>
+          <p className="text-muted-foreground mb-4">{m.users_detail_error_invalidId()}</p>
           <Button asChild>
-            <Link to="/users">Back to Users</Link>
+            <Link to="/users">{m.users_detail_action_backToList()}</Link>
           </Button>
         </div>
       </BaseLayout>
@@ -198,7 +198,7 @@ export default function UserDetailPage() {
 
   if (isLoading) {
     return (
-      <BaseLayout title="Loading User">
+      <BaseLayout title={m.users_detail_loading_title()}>
         <div className="flex items-center justify-center px-4 py-12">
           <LoadingSpinner />
         </div>
@@ -208,15 +208,15 @@ export default function UserDetailPage() {
 
   if (error || !user) {
     return (
-      <BaseLayout title="User Not Found">
+      <BaseLayout title={m.users_detail_error_notFoundTitle()}>
         <div className="flex flex-col items-center justify-center px-4 py-12">
           <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground mb-2">User not found</p>
+          <p className="text-muted-foreground mb-2">{m.users_detail_error_notFound()}</p>
           <p className="text-sm text-muted-foreground mb-4">
-            {error instanceof Error ? error.message : "The user may have been deleted"}
+            {error instanceof Error ? error.message : m.users_detail_error_mayBeDeleted()}
           </p>
           <Button asChild>
-            <Link to="/users">Back to Users</Link>
+            <Link to="/users">{m.users_detail_action_backToList()}</Link>
           </Button>
         </div>
       </BaseLayout>

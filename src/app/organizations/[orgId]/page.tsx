@@ -8,6 +8,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { Button } from "@/components/ui/button"
 import { authClient } from "@/lib/auth-client"
 import type { FullOrganization } from "../types"
+import * as m from "@/paraglide/messages"
 import { OrganizationDetailHeader } from "./components/organization-detail-header"
 import { MembersSection } from "./components/members-section"
 import { InvitationsSection } from "./components/invitations-section"
@@ -32,12 +33,12 @@ export default function OrganizationDetailPage() {
 
   if (!orgId) {
     return (
-      <BaseLayout title="Invalid Organization">
+      <BaseLayout title={m.orgs_detail_error_invalidTitle()}>
         <div className="flex flex-col items-center justify-center px-4 py-12">
           <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground mb-4">Invalid organization ID</p>
+          <p className="text-muted-foreground mb-4">{m.orgs_detail_error_invalidId()}</p>
           <Button asChild>
-            <Link to="/organizations">Back to Organizations</Link>
+            <Link to="/organizations">{m.orgs_detail_action_backToList()}</Link>
           </Button>
         </div>
       </BaseLayout>
@@ -46,7 +47,7 @@ export default function OrganizationDetailPage() {
 
   if (isLoading) {
     return (
-      <BaseLayout title="Loading Organization">
+      <BaseLayout title={m.orgs_detail_loading_title()}>
         <div className="flex items-center justify-center px-4 py-12">
           <LoadingSpinner />
         </div>
@@ -56,15 +57,15 @@ export default function OrganizationDetailPage() {
 
   if (error || !organization) {
     return (
-      <BaseLayout title="Organization Not Found">
+      <BaseLayout title={m.orgs_detail_error_notFoundTitle()}>
         <div className="flex flex-col items-center justify-center px-4 py-12">
           <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground mb-2">Organization not found</p>
+          <p className="text-muted-foreground mb-2">{m.orgs_detail_error_notFound()}</p>
           <p className="text-sm text-muted-foreground mb-4">
-            {error instanceof Error ? error.message : "You don't have access to this organization"}
+            {error instanceof Error ? error.message : m.orgs_detail_error_noAccess()}
           </p>
           <Button asChild>
-            <Link to="/organizations">Back to Organizations</Link>
+            <Link to="/organizations">{m.orgs_detail_action_backToList()}</Link>
           </Button>
         </div>
       </BaseLayout>
