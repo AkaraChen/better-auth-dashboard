@@ -2,14 +2,17 @@
 
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { ArrowLeft, Building2, Edit, RefreshCw } from "lucide-react"
+import { ArrowLeft, Copy, Edit, MoreVertical, Trash2 } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { EditOrganizationDialog } from "../../components/edit-organization-dialog"
 import type { FullOrganization } from "../../types"
 import * as m from "@/paraglide/messages"
@@ -33,71 +36,86 @@ export function OrganizationDetailHeader({
     })
   }
 
+  const copyOrgId = () => {
+    navigator.clipboard.writeText(organization.id)
+    toast.success("Organization ID copied to clipboard")
+  }
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2)
+  }
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="space-y-4">
-          <Link to="/organizations">
-            <Button variant="ghost" size="sm" className="cursor-pointer">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {m.orgs_detail_back()}
-            </Button>
-          </Link>
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              {organization.logo && (
-                <img
-                  src={organization.logo}
-                  alt=""
-                  className="h-12 w-12 rounded"
-                />
-              )}
-              <div>
-                <h1 className="text-2xl font-bold">{organization.name}</h1>
-                <p className="text-sm text-muted-foreground">@{organization.slug}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-2">
-              <Button variant="outline" onClick={onRefresh} className="cursor-pointer">
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-              <Button onClick={() => setEditDialogOpen(true)} className="cursor-pointer">
-                <Edit className="mr-2 h-4 w-4" />
-                {m.orgs_detail_edit()}
-              </Button>
-            </div>
+    <div className="space-y-6">
+      {/* Back navigation */}
+      <Link to="/organizations">
+        <Button variant="ghost" size="sm" className="cursor-pointer -ml-2">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          {m.orgs_detail_back()}
+        </Button>
+      </Link>
+
+      {/* Organization identity */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Avatar className="h-16 w-16 rounded-lg">
+            <AvatarImage src={organization.logo || undefined} />
+            <AvatarFallback className="rounded-lg text-lg">
+              {getInitials(organization.name)}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className="text-2xl font-semibold">{organization.name}</h1>
+            <p className="text-muted-foreground">@{organization.slug}</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              {m.orgs_detail_createdAt()} {formatDate(organization.createdAt)}
+            </p>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-wrap gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-            <span className="text-muted-foreground">{m.orgs_detail_id()}</span>
-            <code className="text-xs">{organization.id}</code>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">{m.orgs_detail_members({ count: organization.members.length })}:</span>
-            <Badge variant="secondary">{organization.members.length}</Badge>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">{m.orgs_detail_invitations({ count: organization.invitations.filter((i: { status: string }) => i.status === "pending").length })}:</span>
-            <Badge variant="secondary">
-              {organization.invitations.filter((i: { status: string }) => i.status === "pending").length}
-            </Badge>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">{m.orgs_detail_createdAt()}:</span>
-            <span>{formatDate(organization.createdAt)}</span>
-          </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setEditDialogOpen(true)}
+            className="cursor-pointer"
+          >
+            <Edit className="mr-2 h-4 w-4" />
+            {m.orgs_detail_edit()}
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon" className="cursor-pointer">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={copyOrgId} className="cursor-pointer">
+                <Copy className="mr-2 h-4 w-4" />
+                Copy Organization ID
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onRefresh} className="cursor-pointer">
+                Refresh
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive" className="cursor-pointer">
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete Organization
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      </CardContent>
+      </div>
 
       <EditOrganizationDialog
         organization={organization}
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
       />
-    </Card>
+    </div>
   )
 }
