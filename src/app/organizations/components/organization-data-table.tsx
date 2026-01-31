@@ -90,6 +90,14 @@ export function OrganizationDataTable({
   const [globalFilter, setGlobalFilter] = useState("")
   const [expandedOrgId, setExpandedOrgId] = useState<string | null>(null)
 
+  const columnLabels: Record<string, string> = {
+    name: m.orgs_table_orgName(),
+    members: m.orgs_table_members(),
+    invitations: m.orgs_table_pendingInvitations(),
+    createdAt: m.orgs_table_created(),
+    actions: m.orgs_table_actions(),
+  }
+
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
@@ -334,7 +342,7 @@ export function OrganizationDataTable({
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) => column.toggleVisibility(!!value)}
                     >
-                      {column.id}
+                      {columnLabels[column.id] ?? column.id}
                     </DropdownMenuCheckboxItem>
                   )
                 })}
