@@ -102,14 +102,14 @@ export function ApiKeyDataTable({
     const expiry = new Date(expiresAt)
     const diff = expiry.getTime() - now.getTime()
 
-    if (diff <= 0) return "Expired"
+    if (diff <= 0) return m.apiKeys_time_expired()
 
     const days = Math.floor(diff / (1000 * 60 * 60 * 24))
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
 
-    if (days > 0) return `${days} day${days > 1 ? "s" : ""}`
-    if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""}`
-    return "< 1 hour"
+    if (days > 0) return m.apiKeys_time_days({ count: days })
+    if (hours > 0) return m.apiKeys_time_hours({ count: hours })
+    return m.apiKeys_time_lessThanHour()
   }
 
   const copyToClipboard = (text: string) => {
@@ -198,7 +198,7 @@ export function ApiKeyDataTable({
               size="sm"
               className="h-8 w-8 cursor-pointer"
               onClick={() => copyToClipboard(apiKey.startsWith)}
-              title="Copy key prefix"
+              title={m.apiKeys_action_copyPrefix()}
             >
               <Copy className="size-4" />
               <span className="sr-only">Copy</span>
@@ -209,20 +209,20 @@ export function ApiKeyDataTable({
               className="h-8 w-8 cursor-pointer"
               onClick={() => onToggleEnabled(apiKey)}
               disabled={expired}
-              title={apiKey.enabled ? "Disable" : "Enable"}
+              title={apiKey.enabled ? m.apiKeys_action_disable() : m.apiKeys_action_enable()}
             >
               {apiKey.enabled ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-              <span className="sr-only">{apiKey.enabled ? "Disable" : "Enable"}</span>
+              <span className="sr-only">{apiKey.enabled ? m.apiKeys_action_disable() : m.apiKeys_action_enable()}</span>
             </Button>
             <Button
               variant="ghost"
               size="sm"
               className="h-8 w-8 cursor-pointer"
               onClick={() => onEdit(apiKey)}
-              title="Edit"
+              title={m.apiKeys_action_edit()}
             >
               <Pencil className="size-4" />
-              <span className="sr-only">Edit</span>
+              <span className="sr-only">{m.apiKeys_action_edit()}</span>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -238,7 +238,7 @@ export function ApiKeyDataTable({
                   onClick={() => onDelete(apiKey.id)}
                 >
                   <Trash2 className="mr-2 size-4" />
-                  Delete API Key
+                  {m.apiKeys_form_buttonDelete()}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

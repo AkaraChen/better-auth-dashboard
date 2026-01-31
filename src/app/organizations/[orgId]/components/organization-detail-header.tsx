@@ -38,7 +38,7 @@ export function OrganizationDetailHeader({
 
   const copyOrgId = () => {
     navigator.clipboard.writeText(organization.id)
-    toast.success("Organization ID copied to clipboard")
+    toast.success(m.orgs_detail_toast_idCopied())
   }
 
   const getInitials = (name: string) => {
@@ -96,15 +96,15 @@ export function OrganizationDetailHeader({
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={copyOrgId} className="cursor-pointer">
                 <Copy className="mr-2 h-4 w-4" />
-                Copy Organization ID
+                {m.orgs_detail_action_copyId()}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onRefresh} className="cursor-pointer">
-                Refresh
+                {m.orgs_detail_action_refresh()}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem variant="destructive" className="cursor-pointer">
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete Organization
+                {m.orgs_detail_action_delete()}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

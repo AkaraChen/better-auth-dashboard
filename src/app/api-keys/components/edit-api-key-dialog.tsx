@@ -99,17 +99,17 @@ export function EditApiKeyDialog({
       })
 
       if (result.error) {
-        throw new Error(result.error.message || "Failed to update API key")
+        throw new Error(result.error.message || m.apiKeys_error_updateFailed())
       }
 
-      toast.success("API key updated successfully")
+      toast.success(m.apiKeys_toast_updated())
       setOpen(false)
       form.reset()
 
       // Invalidate and refetch API keys
       queryClient.invalidateQueries({ queryKey: ["api-keys"] })
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to update API key")
+      toast.error(error instanceof Error ? error.message : m.apiKeys_error_updateFailed())
       console.error(error)
     } finally {
       setIsSubmitting(false)
@@ -129,9 +129,9 @@ export function EditApiKeyDialog({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit API Key</DialogTitle>
+          <DialogTitle>{m.apiKeys_dialog_edit_title()}</DialogTitle>
           <DialogDescription>
-            Update the details of your API key. Changes take effect immediately.
+            {m.apiKeys_dialog_edit_description()}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -144,7 +144,7 @@ export function EditApiKeyDialog({
                   <FormLabel>{m.apiKeys_form_name()}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Production API Key"
+                      placeholder={m.apiKeys_form_namePlaceholder()}
                       {...field}
                     />
                   </FormControl>
@@ -160,7 +160,7 @@ export function EditApiKeyDialog({
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">{m.apiKeys_status_active()}</FormLabel>
                     <p className="text-sm text-muted-foreground">
-                      Disabled API keys cannot be used for authentication
+                      {m.apiKeys_form_disabledHint()}
                     </p>
                   </div>
                   <FormControl>
@@ -202,10 +202,10 @@ export function EditApiKeyDialog({
                 {isSubmitting ? (
                   <>
                     <LoadingSpinner className="mr-2 size-4" />
-                    Updating...
+                    {m.apiKeys_form_buttonUpdating()}
                   </>
                 ) : (
-                  "Update"
+                  m.apiKeys_form_buttonUpdate()
                 )}
               </Button>
             </DialogFooter>

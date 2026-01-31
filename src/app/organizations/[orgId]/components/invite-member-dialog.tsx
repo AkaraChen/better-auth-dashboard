@@ -33,9 +33,10 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { authClient } from "@/lib/auth-client"
+import * as m from "@/paraglide/messages"
 
 const inviteMemberFormSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
+  email: z.string().email({ message: m.orgs_invite_validation_invalidEmail() }),
   role: z.enum(["member", "admin"]),
 })
 
@@ -79,7 +80,7 @@ export function InviteMemberDialog({
       return response.data
     },
     onSuccess: () => {
-      toast.success("Member invited successfully")
+      toast.success(m.orgs_invite_toast_success())
       queryClient.invalidateQueries({
         queryKey: ["organizations", organizationId, "full"],
       })
@@ -99,9 +100,9 @@ export function InviteMemberDialog({
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Invite Member</DialogTitle>
+          <DialogTitle>{m.orgs_invite_dialog_title()}</DialogTitle>
           <DialogDescription>
-            Send an invitation to join this organization.
+            {m.orgs_invite_dialog_description()}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -111,11 +112,11 @@ export function InviteMemberDialog({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{m.orgs_invite_form_email()}</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="user@example.com"
+                      placeholder={m.orgs_invite_form_emailPlaceholder()}
                       {...field}
                     />
                   </FormControl>
@@ -128,19 +129,19 @@ export function InviteMemberDialog({
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
+                  <FormLabel>{m.orgs_invite_form_role()}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger className="cursor-pointer">
-                        <SelectValue placeholder="Select a role" />
+                        <SelectValue placeholder={m.orgs_invite_form_selectRole()} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="member">Member</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="member">{m.orgs_invite_role_member()}</SelectItem>
+                      <SelectItem value="admin">{m.orgs_invite_role_admin()}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -155,7 +156,7 @@ export function InviteMemberDialog({
                 disabled={inviteMutation.isPending}
                 className="cursor-pointer"
               >
-                Cancel
+                {m.orgs_invite_form_buttonCancel()}
               </Button>
               <Button
                 type="submit"
@@ -165,10 +166,10 @@ export function InviteMemberDialog({
                 {inviteMutation.isPending ? (
                   <>
                     <LoadingSpinner className="mr-2 size-4" />
-                    Sending...
+                    {m.orgs_invite_form_buttonSending()}
                   </>
                 ) : (
-                  "Send Invitation"
+                  m.orgs_invite_form_buttonSend()
                 )}
               </Button>
             </DialogFooter>
