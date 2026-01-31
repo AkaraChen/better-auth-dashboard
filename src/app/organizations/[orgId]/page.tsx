@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button"
 import { authClient } from "@/lib/auth-client"
 import type { FullOrganization } from "../types"
 import { OrganizationDetailHeader } from "./components/organization-detail-header"
-import { OrganizationDetailTabs } from "./components/organization-detail-tabs"
+import { MembersSection } from "./components/members-section"
+import { InvitationsSection } from "./components/invitations-section"
 
 export default function OrganizationDetailPage() {
   const { orgId } = useParams<{ orgId: string }>()
@@ -77,7 +78,8 @@ export default function OrganizationDetailPage() {
           organization={organization}
           onRefresh={() => refetch()}
         />
-        <OrganizationDetailTabs organization={organization} />
+        <MembersSection organization={organization} />
+        <InvitationsSection organization={organization} />
       </div>
     </BaseLayout>
   )

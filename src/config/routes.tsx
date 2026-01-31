@@ -8,6 +8,7 @@ import * as m from '@/paraglide/messages'
 const Landing = lazy(() => import('@/app/landing/page'))
 const Dashboard = lazy(() => import('@/app/dashboard/page'))
 const Users = lazy(() => import('@/app/users/page'))
+const UserDetail = lazy(() => import('@/app/users/[userId]/page'))
 const Organizations = lazy(() => import('@/app/organizations/page'))
 const OrganizationDetail = lazy(() => import('@/app/organizations/[orgId]/page'))
 const ApiKeys = lazy(() => import('@/app/api-keys/page'))
@@ -71,6 +72,11 @@ export const getRoutes = (): RouteConfig[] => [
     title: m.users_title(),
     icon: UsersIcon,
     requiresFeature: "admin"
+  },
+  {
+    path: "/users/:userId",
+    element: <UserDetail />,
+    hide: true
   },
   {
     path: "/organizations",

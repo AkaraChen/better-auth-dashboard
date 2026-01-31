@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -83,6 +83,7 @@ export function OrganizationDataTable({
   onEdit,
   onDelete,
 }: OrganizationDataTableProps) {
+  const navigate = useNavigate()
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -392,9 +393,20 @@ export function OrganizationDataTable({
                 const isExpanded = expandedOrgId === org.id
                 return (
                   <>
-                    <TableRow key={row.id}>
+                    <TableRow
+                      key={row.id}
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/organizations/${org.id}`)}
+                    >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                        <TableCell
+                          key={cell.id}
+                          onClick={(e) => {
+                            if (cell.column.id === "actions") {
+                              e.stopPropagation()
+                            }
+                          }}
+                        >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       ))}
